@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>变电设备健康管理系统 - 省公司总览</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-primary: #0a0e27; --bg-secondary: #1a1f3a; --bg-card: rgba(22, 33, 62, 0.8);
+            --accent-green: #006633; --accent-green-light: #00cc66; --accent-blue: #00d4ff;
+            --accent-purple: #7b2cbf; --text-primary: #ffffff; --text-secondary: #a0a8c0;
+            --warning: #ff9800; --danger: #ff4444; --success: #00c853;
+        }
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1430 100%);
+            color: var(--text-primary); min-height: 100vh; overflow-x: hidden;
+        }
+        /* 动画背景粒子 */
+        .bg-particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; pointer-events: none; }
+        .particle { position: absolute; width: 4px; height: 4px; background: var(--accent-green-light); border-radius: 50%; opacity: 0.3; animation: float 15s infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 0.5; } 90% { opacity: 0.5; } 100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; } }
+        
+        /* 头部导航 */
+        .header { background: rgba(22, 33, 62, 0.95); backdrop-filter: blur(20px); border-bottom: 2px solid var(--accent-green); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 30px rgba(0, 102, 51, 0.3); position: sticky; top: 0; z-index: 1000; }
+        .logo { display: flex; align-items: center; gap: 1rem; }
+        .logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--accent-green), var(--accent-green-light)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; animation: glow 2s ease-in-out infinite; }
+        @keyframes glow { 0%, 100% { box-shadow: 0 0 20px rgba(0, 204, 102, 0.5); } 50% { box-shadow: 0 0 40px rgba(0, 204, 102, 0.8); } }
+        .logo h1 { font-size: 1.5rem; background: linear-gradient(90deg, var(--accent-green-light), var(--accent-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .nav { display: flex; gap: 0.5rem; }
+        .nav a { color: var(--text-secondary); text-decoration: none; padding: 0.6rem 1.2rem; border-radius: 10px; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem; font-size: 0.95rem; border: 1px solid transparent; }
+        .nav a:hover, .nav a.active { color: var(--text-primary); background: rgba(0, 102, 51, 0.2); border-color: var(--accent-green); box-shadow: 0 0 20px rgba(0, 102, 51, 0.3); }
+        .mobile-menu-btn { display: none; background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; }
+        
+        /* 主容器 */
+        .container { max-width: 1600px; margin: 0 auto; padding: 1.5rem; }
+        
+        /* 指标卡片网格 */
+        .metrics-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+        .metric-card { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: 16px; padding: 1.2rem; border: 1px solid rgba(0, 102, 51, 0.3); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .metric-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--accent-green), var(--accent-blue)); }
+        .metric-card:hover { transform: translateY(-8px); box-shadow: 0 15px 45px rgba(0, 102, 51, 0.4); border-color: var(--accent-green-light); }
+        .metric-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 0.8rem; }
+        .metric-icon.green { background: linear-gradient(135deg, var(--accent-green), var(--accent-green-light)); }
+        .metric-icon.blue { background: linear-gradient(135deg, #0066cc, var(--accent-blue)); }
+        .metric-icon.orange { background: linear-gradient(135deg, #cc6600, var(--warning)); }
+        .metric-icon.red { background: linear-gradient(135deg, #cc0000, var(--danger)); }
+        .metric-icon.purple { background: linear-gradient(135deg, var(--accent-purple), #a855f7); }
+        .metric-icon.cyan { background: linear-gradient(135deg, #0891b2, #22d3ee); }
+        .metric-value { font-size: 1.8rem; font-weight: bold; background: linear-gradient(90deg, var(--text-primary), var(--accent-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .metric-label { color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.3rem; }
+        .metric-trend { display: flex; align-items: center; gap: 0.3rem; margin-top: 0.5rem; font-size: 0.75rem; }
+        .trend-up { color: var(--success); } .trend-down { color: var(--danger); }
+        
+        /* 主内容区 */
+        .main-content { display: grid; grid-template-columns: 1fr 380px; gap: 1.5rem; }
+        
+        /* 卡片通用样式 */
+        .card { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: 16px; padding: 1.5rem; border: 1px solid rgba(0, 102, 51, 0.2); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+        .card-title { font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .card-title i { color: var(--accent-green-light); }
+        
+        /* 地图容器 */
+        #map-chart { width: 100%; height: 450px; border-radius: 12px; }
+        
+        /* 图表容器 */
+        .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem; }
+        #pie-chart, #trend-chart { width: 100%; height: 280px; }
+        
+        /* 告警列表 */
+        .alarm-list { display: flex; flex-direction: column; gap: 0.8rem; max-height: 400px; overflow-y: auto; }
+        .alarm-item { background: rgba(255, 68, 68, 0.08); border-left: 4px solid var(--danger); padding: 1rem; border-radius: 10px; display: flex; align-items: flex-start; gap: 0.8rem; animation: slideIn 0.4s ease; transition: all 0.3s ease; }
+        .alarm-item:hover { background: rgba(255, 68, 68, 0.15); transform: translateX(5px); }
+        .alarm-item.warning { background: rgba(255, 152, 0, 0.08); border-left-color: var(--warning); }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        .alarm-icon { font-size: 1.2rem; color: var(--danger); margin-top: 0.2rem; }
+        .alarm-item.warning .alarm-icon { color: var(--warning); }
+        .alarm-content { flex: 1; }
+        .alarm-title { font-weight: 600; margin-bottom: 0.3rem; font-size: 0.9rem; }
+        .alarm-time { color: var(--text-secondary); font-size: 0.75rem; }
+        .alarm-badge { background: var(--danger); color: white; padding: 0.2rem 0.5rem; border-radius: 20px; font-size: 0.7rem; font-weight: bold; }
+        
+        /* 排名列表 */
+        .ranking-list { display: flex; flex-direction: column; gap: 0.6rem; }
+        .ranking-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.7rem; background: rgba(255, 255, 255, 0.03); border-radius: 10px; transition: all 0.3s ease; }
+        .ranking-item:hover { background: rgba(0, 102, 51, 0.15); transform: translateX(5px); }
+        .ranking-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; flex-shrink: 0; }
+        .ranking-num.gold { background: linear-gradient(135deg, #ffd700, #ffaa00); color: #000; }
+        .ranking-num.silver { background: linear-gradient(135deg, #c0c0c0, #a0a0a0); color: #000; }
+        .ranking-num.bronze { background: linear-gradient(135deg, #cd7f32, #b87333); color: #fff; }
+        .ranking-num.normal { background: rgba(255, 255, 255, 0.15); }
+        .ranking-info { flex: 1; min-width: 0; }
+        .ranking-name { font-weight: 600; margin-bottom: 0.3rem; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ranking-bar { height: 6px; background: rgba(255, 255, 255, 0.08); border-radius: 3px; overflow: hidden; }
+        .ranking-fill { height: 100%; background: linear-gradient(90deg, var(--accent-green), var(--accent-green-light)); border-radius: 3px; transition: width 1s ease; }
+        .ranking-score { font-weight: bold; color: var(--accent-green-light); min-width: 45px; text-align: right; font-size: 0.9rem; }
+        
+        /* 页脚 */
+        .footer { text-align: center; padding: 2rem; color: var(--text-secondary); border-top: 1px solid rgba(255, 255, 255, 0.08); margin-top: 2rem; font-size: 0.85rem; }
+        
+        /* 响应式设计 */
+        @media (max-width: 1400px) { .metrics-grid { grid-template-columns: repeat(3, 1fr); } .main-content { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { .header { padding: 1rem; } .logo h1 { font-size: 1.1rem; } .nav { display: none; position: absolute; top: 100%; left: 0; right: 0; background: rgba(22, 33, 62, 0.98); flex-direction: column; padding: 1rem; gap: 0.5rem; } .nav.active { display: flex; } .mobile-menu-btn { display: block; } .metrics-grid { grid-template-columns: repeat(2, 1fr); } .container { padding: 1rem; } .charts-row { grid-template-columns: 1fr; } #map-chart { height: 300px; } }
+        
+        /* 滚动条美化 */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: var(--accent-green); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-green-light); }
+    </style>
+</head>
+<body>
+    <div class="bg-particles" id="particles"></div>
+    
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon"><i class="fas fa-bolt"></i></div>
+            <h1>变电设备健康管理系统</h1>
+        </div>
+        <button class="mobile-menu-btn" onclick="document.querySelector('.nav').classList.toggle('active')"><i class="fas fa-bars"></i></button>
+        <nav class="nav">
+            <a href="index.html" class="active"><i class="fas fa-chart-line"></i> 省公司总览</a>
+            <a href="substation.html"><i class="fas fa-building"></i> 变电站总览</a>
+            <a href="equipment.html"><i class="fas fa-cog"></i> 设备详情</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- 6 个指标卡片 -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-icon green"><i class="fas fa-subway"></i></div>
+                <div class="metric-value">528</div>
+                <div class="metric-label">变电站总数</div>
+                <div class="metric-trend trend-up"><i class="fas fa-arrow-up"></i> +12 本月</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon blue"><i class="fas fa-plug"></i></div>
+                <div class="metric-value">15,840</div>
+                <div class="metric-label">设备总数</div>
+                <div class="metric-trend trend-up"><i class="fas fa-arrow-up"></i> +324 本月</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon green"><i class="fas fa-heartbeat"></i></div>
+                <div class="metric-value">98.6%</div>
+                <div class="metric-label">设备健康率</div>
+                <div class="metric-trend trend-up"><i class="fas fa-arrow-up"></i> +0.3%</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon red"><i class="fas fa-bell"></i></div>
+                <div class="metric-value">23</div>
+                <div class="metric-label">当前告警</div>
+                <div class="metric-trend trend-down"><i class="fas fa-arrow-down"></i> -5 昨日</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon purple"><i class="fas fa-clipboard-check"></i></div>
+                <div class="metric-value">156</div>
+                <div class="metric-label">今日巡检</div>
+                <div class="metric-trend trend-up"><i class="fas fa-arrow-up"></i> 完成率 94%</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon cyan"><i class="fas fa-tools"></i></div>
+                <div class="metric-value">89</div>
+                <div class="metric-label">处理工单</div>
+                <div class="metric-trend trend-up"><i class="fas fa-arrow-up"></i> +12 昨日</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fas fa-map-marked-alt"></i>变电站分布热力图</h2>
+                        <div style="display:flex;gap:1rem;font-size:0.75rem;color:var(--text-secondary);">
+                            <span><i class="fas fa-circle" style="color:var(--danger);font-size:0.5rem;"></i> 严重</span>
+                            <span><i class="fas fa-circle" style="color:var(--warning);font-size:0.5rem;"></i> 告警</span>
+                            <span><i class="fas fa-circle" style="color:var(--success);font-size:0.5rem;"></i> 正常</span>
+                        </div>
+                    </div>
+                    <div id="map-chart"></div>
+                </div>
+                <div class="charts-row">
+                    <div class="card">
+                        <div class="card-header"><h2 class="card-title"><i class="fas fa-chart-pie"></i>设备类型分布</h2></div>
+                        <div id="pie-chart"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h2 class="card-title"><i class="fas fa-chart-line"></i>健康趋势</h2></div>
+                        <div id="trend-chart"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fas fa-bell"></i>实时告警</h2>
+                        <span style="color:var(--accent-green-light);font-size:0.75rem;"><i class="fas fa-circle" style="font-size:0.4rem;animation:blink 1s infinite;"></i> 实时</span>
+                    </div>
+                    <div class="alarm-list">
+                        <div class="alarm-item"><i class="fas fa-exclamation-triangle alarm-icon"></i><div class="alarm-content"><div class="alarm-title">南昌 500kV 变电站 #1 主变油温过高</div><div class="alarm-time">14:35:22</div></div><span class="alarm-badge">紧急</span></div>
+                        <div class="alarm-item warning"><i class="fas fa-exclamation-circle alarm-icon" style="color:var(--warning)"></i><div class="alarm-content"><div class="alarm-title">九江 220kV 变电站 断路器气压偏低</div><div class="alarm-time">14:28:15</div></div></div>
+                        <div class="alarm-item"><i class="fas fa-exclamation-triangle alarm-icon"></i><div class="alarm-content"><div class="alarm-title">赣州 110kV 变电站 避雷器泄漏电流异常</div><div class="alarm-time">14:15:08</div></div><span class="alarm-badge">紧急</span></div>
+                        <div class="alarm-item warning"><i class="fas fa-exclamation-circle alarm-icon" style="color:var(--warning)"></i><div class="alarm-content"><div class="alarm-title">上饶 220kV 变电站 隔离开关触头温度偏高</div><div class="alarm-time">13:52:33</div></div></div>
+                        <div class="alarm-item"><i class="fas fa-exclamation-triangle alarm-icon"></i><div class="alarm-content"><div class="alarm-title">宜春 110kV 变电站 CT 二次回路异常</div><div class="alarm-time">13:41:17</div></div><span class="alarm-badge">紧急</span></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h2 class="card-title"><i class="fas fa-trophy"></i>地区健康排名</h2></div>
+                    <div class="ranking-list">
+                        <div class="ranking-item"><div class="ranking-num gold">1</div><div class="ranking-info"><div class="ranking-name">南昌市公司</div><div class="ranking-bar"><div class="ranking-fill" style="width:99.2%"></div></div></div><div class="ranking-score">99.2</div></div>
+                        <div class="ranking-item"><div class="ranking-num silver">2</div><div class="ranking-info"><div class="ranking-name">赣州市公司</div><div class="ranking-bar"><div class="ranking-fill" style="width:98.8%"></div></div></div><div class="ranking-score">98.8</div></div>
+                        <div class="ranking-item"><div class="ranking-num bronze">3</div><div class="ranking-info"><div class="ranking-name">九江市公司</div><div class="ranking-bar"><div class="ranking-fill" style="width:98.5%"></div></div></div><div class="ranking-score">98.5</div></div>
+                        <div class="ranking-item"><div class="ranking-num normal">4</div><div class="ranking-info"><div class="ranking-name">上饶市公司</div><div class="ranking-bar"><div class="ranking-fill" style="width:98.1%"></div></div></div><div class="ranking-score">98.1</div></div>
+                        <div class="ranking-item"><div class="ranking-num normal">5</div><div class="ranking-info"><div class="ranking-name">宜春市公司</div><div class="ranking-bar"><div class="ranking-fill" style="width:97.8%"></div></div></div><div class="ranking-score">97.8</div></div>
+                        <div class="ranking-item"><div class="ranking-num normal">6</div><div class="ranking-info"><div class="ranking-name">吉安市公司</div><div class="ranking-bar"><div class="ranking-fill" style="width:97.5%"></div></div></div><div class="ranking-score">97.5</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">© 2026 变电设备健康管理系统 | 国网江西省电力公司 | 技术支持：AI 开发助手</footer>
+
+    <style>@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}</style>
+    
+    <script>
+        // 创建背景粒子
+        const particlesContainer = document.getElementById('particles');
+        for(let i=0;i<30;i++){const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.animationDelay=Math.random()*15+'s';p.style.animationDuration=(10+Math.random()*10)+'s';particlesContainer.appendChild(p);}
+        
+        // 地图数据
+        const mapData = [
+            {name:'南昌市',value:99.2,stations:85,alarms:2,coord:[115.89,28.68]},
+            {name:'赣州市',value:98.8,stations:72,alarms:3,coord:[114.94,25.85]},
+            {name:'九江市',value:98.5,stations:68,alarms:5,coord:[116.00,29.70]},
+            {name:'上饶市',value:98.1,stations:65,alarms:4,coord:[117.97,28.45]},
+            {name:'宜春市',value:97.8,stations:58,alarms:3,coord:[114.39,27.80]},
+            {name:'吉安市',value:97.5,stations:52,alarms:2,coord:[114.96,27.11]},
+            {name:'抚州市',value:97.2,stations:48,alarms:1,coord:[116.36,27.95]},
+            {name:'景德镇市',value:96.9,stations:35,alarms:2,coord:[117.21,29.30]},
+            {name:'萍乡市',value:96.5,stations:32,alarms:1,coord:[113.85,27.62]},
+            {name:'新余市',value:96.2,stations:28,alarms:0,coord:[114.92,27.81]},
+            {name:'鹰潭市',value:95.8,stations:25,alarms:0,coord:[117.07,28.27]}
+        ];
+        
+        const mapChart = echarts.init(document.getElementById('map-chart'));
+        mapChart.setOption({
+            tooltip:{trigger:'item',formatter:'{b}<br/>健康:{c}%<br/>变电站:{d.stations}座<br/>告警:{d.alarms}个',backgroundColor:'rgba(22,33,62,0.95)',borderColor:'#006633',textStyle:{color:'#fff'}},
+            geo:{map:'china',roam:true,zoom:1.5,center:[115.89,28.68],label:{show:false},itemStyle:{areaColor:'#0a0e27',borderColor:'#006633',borderWidth:2},emphasis:{itemStyle:{areaColor:'#1a1f3a'}}},
+            series:[{
+                type:'effectScatter',coordinateSystem:'geo',
+                data:mapData.map(d=>({name:d.name,value:[...d.coord,d.value],alarms:d.alarms,stations:d.stations})),
+                symbolSize:d=>12+(d.value[2]-95)*4,showEffectOn:'render',rippleEffect:{brushType:'stroke',scale:3},
+                itemStyle:{color:d=>d.data.alarms>3?'#ff4444':d.data.alarms>1?'#ff9800':'#00c853',shadowBlur:15,shadowColor:'#006633'},
+                label:{show:true,formatter:'{b}',position:'right',color:'#fff',fontSize:9}
+            }]
+        });
+        
+        const pieChart = echarts.init(document.getElementById('pie-chart'));
+        pieChart.setOption({
+            tooltip:{trigger:'item',backgroundColor:'rgba(22,33,62,0.95)',borderColor:'#006633',textStyle:{color:'#fff'}},
+            legend:{orient:'vertical',right:'5%',top:'center',textStyle:{color:'#a0a8c0',fontSize:10}},
+            series:[{type:'pie',radius:['45%','75%'],center:['35%','50%'],avoidLabelOverlap:false,itemStyle:{borderRadius:8,borderColor:'#16213e',borderWidth:2},label:{show:false},emphasis:{label:{show:true,fontSize:12,fontWeight:'bold',color:'#fff'}},
+                data:[{value:3520,name:'变压器',itemStyle:{color:'#006633'}},{value:4280,name:'断路器',itemStyle:{color:'#00d4ff'}},{value:3150,name:'隔离开关',itemStyle:{color:'#7b2cbf'}},{value:2890,name:'互感器',itemStyle:{color:'#00cc66'}},{value:2000,name:'避雷器',itemStyle:{color:'#ff9800'}}]
+            }]
+        });
+        
+        const trendChart = echarts.init(document.getElementById('trend-chart'));
+        trendChart.setOption({
+            tooltip:{trigger:'axis',backgroundColor:'rgba(22,33,62,0.95)',borderColor:'#006633',textStyle:{color:'#fff'}},
+            grid:{top:30,right:20,bottom:30,left:40},
+            xAxis:{type:'category',data:['9 月','10 月','11 月','12 月','1 月','2 月','3 月'],axisLine:{lineStyle:{color:'#a0a8c0'}}},
+            yAxis:{type:'value',min:95,max:100,axisLine:{lineStyle:{color:'#a0a8c0'}},splitLine:{lineStyle:{color:'rgba(255,255,255,0.08)'}}},
+            series:[{type:'line',data:[97.2,97.5,97.8,98.1,98.3,98.5,98.6],smooth:true,lineStyle:{color:'#00cc66',width:3},areaStyle:{color:{type:'linear',x:0,y:0,x:0,y:1,colorStops:[{offset:0,color:'rgba(0,204,102,0.3)'},{offset:1,color:'rgba(0,204,102,0)'}]}},itemStyle:{color:'#00cc66'}}]
+        });
+        
+        window.addEventListener('resize',()=>{mapChart.resize();pieChart.resize();trendChart.resize();});
+        
+        // 模拟实时告警
+        setInterval(()=>{
+            const alarms=[{title:'南昌 500kV 变电站 #2 主变瓦斯继电器动作',type:'danger'},{title:'九江 220kV 变电站 SF6 气体压力异常',type:'warning'},{title:'赣州 110kV 变电站 直流系统接地',type:'danger'}];
+            const a=alarms[Math.floor(Math.random()*alarms.length)];
+            const list=document.querySelector('.alarm-list');
+            const item=document.createElement('div');
+            item.className=`alarm-item${a.type==='warning'?' warning':''}`;
+            item.innerHTML=`<i class="fas fa-exclamation-${a.type==='warning'?'circle':'triangle'} alarm-icon"></i><div class="alarm-content"><div class="alarm-title">${a.title}</div><div class="alarm-time">${new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}</div></div>${a.type==='danger'?'<span class="alarm-badge">紧急</span>':''}`;
+            list.insertBefore(item,list.firstChild);
+            if(list.children.length>5)list.removeChild(list.lastChild);
+        },30000);
+    </script>
+</body>
+</html>

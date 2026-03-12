@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设备详情 - 变电设备健康管理系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-primary: #0a0e27; --bg-secondary: #1a1f3a; --bg-card: rgba(22, 33, 62, 0.8);
+            --accent-green: #006633; --accent-green-light: #00cc66; --accent-blue: #00d4ff;
+            --text-primary: #ffffff; --text-secondary: #a0a8c0;
+            --warning: #ff9800; --danger: #ff4444; --success: #00c853;
+        }
+        body { font-family: 'Microsoft YaHei', Arial, sans-serif; background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1430 100%); color: var(--text-primary); min-height: 100vh; }
+        .bg-particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; pointer-events: none; }
+        .particle { position: absolute; width: 4px; height: 4px; background: var(--accent-green-light); border-radius: 50%; opacity: 0.3; animation: float 15s infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 0.5; } 90% { opacity: 0.5; } 100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; } }
+        
+        .header { background: rgba(22, 33, 62, 0.95); backdrop-filter: blur(20px); border-bottom: 2px solid var(--accent-green); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        .logo { display: flex; align-items: center; gap: 1rem; }
+        .logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--accent-green), var(--accent-green-light)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .logo h1 { font-size: 1.5rem; background: linear-gradient(90deg, var(--accent-green-light), var(--accent-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .nav { display: flex; gap: 0.5rem; }
+        .nav a { color: var(--text-secondary); text-decoration: none; padding: 0.6rem 1.2rem; border-radius: 10px; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem; font-size: 0.95rem; border: 1px solid transparent; }
+        .nav a:hover, .nav a.active { color: var(--text-primary); background: rgba(0, 102, 51, 0.2); border-color: var(--accent-green); }
+        .mobile-menu-btn { display: none; background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; }
+        
+        .container { max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
+        .breadcrumb { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; color: var(--text-secondary); font-size: 0.9rem; flex-wrap: wrap; }
+        .breadcrumb a { color: var(--accent-blue); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        
+        .detail-grid { display: grid; grid-template-columns: 1fr 350px; gap: 1.5rem; margin-bottom: 1.5rem; }
+        .card { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: 16px; padding: 1.5rem; border: 1px solid rgba(0,102,51,0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.3rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .card-title { font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .card-title i { color: var(--accent-green-light); }
+        
+        .equip-header { display: flex; gap: 1.5rem; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .equip-icon { width: 90px; height: 90px; border-radius: 18px; background: linear-gradient(135deg, var(--accent-green), var(--accent-green-light)); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; box-shadow: 0 8px 30px rgba(0,102,51,0.4); flex-shrink: 0; }
+        .equip-basic h2 { font-size: 1.6rem; margin-bottom: 0.5rem; }
+        .equip-basic p { color: var(--text-secondary); margin-bottom: 0.3rem; font-size: 0.9rem; }
+        .equip-basic .status { display: inline-block; padding: 0.35rem 1rem; border-radius: 20px; background: rgba(0,200,83,0.2); color: var(--success); font-weight: 600; margin-top: 0.5rem; font-size: 0.85rem; }
+        
+        .info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        .info-item { padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 12px; border-left: 4px solid var(--accent-green); transition: all 0.3s ease; }
+        .info-item:hover { background: rgba(0,102,51,0.15); transform: translateX(5px); }
+        .info-label { color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 0.3rem; }
+        .info-value { font-size: 1.1rem; font-weight: 600; }
+        
+        .health-section { text-align: center; padding: 1rem; }
+        .score-circle { width: 180px; height: 180px; margin: 0 auto 1rem; background: conic-gradient(var(--accent-green) 0% 98%, var(--bg-secondary) 98% 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 0 40px rgba(0,204,102,0.3); }
+        .score-inner { width: 140px; height: 140px; background: var(--bg-card); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 3px solid rgba(0,102,51,0.3); }
+        .score-value { font-size: 2.5rem; font-weight: bold; color: var(--accent-green-light); }
+        .score-label { color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.3rem; }
+        .score-trend { color: var(--success); font-size: 0.85rem; margin-top: 0.8rem; font-weight: 600; }
+        
+        .trend-list { display: flex; flex-direction: column; gap: 0.7rem; }
+        .trend-item { display: flex; align-items: center; gap: 1rem; padding: 0.8rem; background: rgba(255,255,255,0.03); border-radius: 10px; transition: all 0.3s ease; }
+        .trend-item:hover { background: rgba(0,102,51,0.1); }
+        .trend-date { width: 70px; color: var(--text-secondary); font-size: 0.85rem; }
+        .trend-bar { flex: 1; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
+        .trend-fill { height: 100%; background: linear-gradient(90deg, var(--accent-green), var(--accent-green-light)); border-radius: 4px; transition: width 1s ease; }
+        .trend-score { width: 45px; text-align: right; font-weight: 600; color: var(--accent-green-light); font-size: 0.9rem; }
+        
+        .monitor-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+        .monitor-item { padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 12px; text-align: center; transition: all 0.3s ease; border: 1px solid transparent; }
+        .monitor-item:hover { background: rgba(0,102,51,0.1); border-color: var(--accent-green); }
+        .monitor-label { color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 0.5rem; }
+        .monitor-value { font-size: 1.6rem; font-weight: bold; color: var(--accent-blue); }
+        .monitor-unit { font-size: 0.8rem; color: var(--text-secondary); }
+        
+        .alarm-history { display: flex; flex-direction: column; gap: 0.7rem; }
+        .alarm-record { display: flex; align-items: center; gap: 0.8rem; padding: 0.8rem; background: rgba(255,68,68,0.08); border-left: 3px solid var(--danger); border-radius: 10px; }
+        .alarm-record.warning { background: rgba(255,152,0,0.08); border-left-color: var(--warning); }
+        .alarm-record i { font-size: 1rem; color: var(--danger); }
+        .alarm-record.warning i { color: var(--warning); }
+        .alarm-record-content { flex: 1; }
+        .alarm-record-title { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.2rem; }
+        .alarm-record-time { font-size: 0.75rem; color: var(--text-secondary); }
+        
+        .footer { text-align: center; padding: 2rem; color: var(--text-secondary); border-top: 1px solid rgba(255,255,255,0.08); margin-top: 2rem; font-size: 0.85rem; }
+        
+        @media (max-width: 1024px) { .detail-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { .header { padding: 1rem; } .logo h1 { font-size: 1.1rem; } .nav { display: none; position: absolute; top: 100%; left: 0; right: 0; background: rgba(22,33,62,0.98); flex-direction: column; padding: 1rem; } .nav.active { display: flex; } .mobile-menu-btn { display: block; } .info-grid { grid-template-columns: 1fr 1fr; } .equip-header { flex-direction: column; text-align: center; } .monitor-grid { grid-template-columns: 1fr; } }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: var(--accent-green); border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <div class="bg-particles" id="particles"></div>
+    <header class="header">
+        <div class="logo"><div class="logo-icon"><i class="fas fa-bolt"></i></div><h1>变电设备健康管理系统</h1></div>
+        <button class="mobile-menu-btn" onclick="document.querySelector('.nav').classList.toggle('active')"><i class="fas fa-bars"></i></button>
+        <nav class="nav">
+            <a href="index.html"><i class="fas fa-chart-line"></i> 省公司总览</a>
+            <a href="substation.html"><i class="fas fa-building"></i> 变电站总览</a>
+            <a href="equipment.html" class="active"><i class="fas fa-cog"></i> 设备详情</a>
+        </nav>
+    </header>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="index.html"><i class="fas fa-home"></i> 首页</a> / <a href="substation.html">变电站</a> / <span>设备详情</span>
+        </div>
+        <div class="detail-grid">
+            <div class="left-panel">
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <div class="card-header"><h2 class="card-title"><i class="fas fa-info-circle"></i>设备基本信息</h2></div>
+                    <div class="equip-header">
+                        <div class="equip-icon"><i class="fas fa-car-battery"></i></div>
+                        <div class="equip-basic">
+                            <h2>#1 主变压器</h2>
+                            <p>设备编号：NBQ-2024-001</p>
+                            <p>型号：SFP-720000/500</p>
+                            <p>位置：南昌 500kV 变电站</p>
+                            <span class="status"><i class="fas fa-check-circle"></i> 正常运行</span>
+                        </div>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item"><div class="info-label">投运日期</div><div class="info-value">2020-06-15</div></div>
+                        <div class="info-item"><div class="info-label">额定容量</div><div class="info-value">720 MVA</div></div>
+                        <div class="info-item"><div class="info-label">额定电压</div><div class="info-value">500/220/35 kV</div></div>
+                        <div class="info-item"><div class="info-label">生产厂家</div><div class="info-value">特变电工</div></div>
+                        <div class="info-item"><div class="info-label">投运年限</div><div class="info-value">5.7 年</div></div>
+                        <div class="info-item"><div class="info-label">检修周期</div><div class="info-value">180 天</div></div>
+                    </div>
+                </div>
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <div class="card-header"><h2 class="card-title"><i class="fas fa-chart-line"></i>健康趋势</h2></div>
+                    <div id="trend-chart" style="height: 280px;"></div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h2 class="card-title"><i class="fas fa-desktop"></i>实时监测数据</h2><span style="color:var(--accent-green-light);font-size:0.8rem;"><i class="fas fa-circle" style="font-size:0.4rem;animation:blink 1s infinite;"></i> 实时更新</span></div>
+                    <div class="monitor-grid">
+                        <div class="monitor-item"><div class="monitor-label">A 相油温</div><div class="monitor-value">45.2<span class="monitor-unit">°C</span></div></div>
+                        <div class="monitor-item"><div class="monitor-label">B 相油温</div><div class="monitor-value">46.8<span class="monitor-unit">°C</span></div></div>
+                        <div class="monitor-item"><div class="monitor-label">C 相油温</div><div class="monitor-value">44.5<span class="monitor-unit">°C</span></div></div>
+                        <div class="monitor-item"><div class="monitor-label">顶层油温</div><div class="monitor-value">52.3<span class="monitor-unit">°C</span></div></div>
+                        <div class="monitor-item"><div class="monitor-label">A 相电流</div><div class="monitor-value">856<span class="monitor-unit">A</span></div></div>
+                        <div class="monitor-item"><div class="monitor-label">B 相电流</div><div class="monitor-value">862<span class="monitor-unit">A</span></div></div>
+                        <div class="monitor-item"><div class="monitor-label">C 相电流</div><div class="monitor-value">851<span class="monitor-unit">A</span></div></div>
+                        <div class="monitor-item"><div class="monitor-label">负载率</div><div class="monitor-value">68.5<span class="monitor-unit">%</span></div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <div class="card-header"><h2 class="card-title"><i class="fas fa-heartbeat"></i>健康评分</h2></div>
+                    <div class="health-section">
+                        <div class="score-circle"><div class="score-inner"><div class="score-value">98</div><div class="score-label">健康指数</div></div></div>
+                        <div class="score-trend"><i class="fas fa-arrow-up"></i> 较上月 +1.5</div>
+                    </div>
+                </div>
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <div class="card-header"><h2 class="card-title"><i class="fas fa-history"></i>近 6 个月趋势</h2></div>
+                    <div class="trend-list">
+                        <div class="trend-item"><div class="trend-date">03-12</div><div class="trend-bar"><div class="trend-fill" style="width:98%"></div></div><div class="trend-score">98</div></div>
+                        <div class="trend-item"><div class="trend-date">02-12</div><div class="trend-bar"><div class="trend-fill" style="width:96.5%"></div></div><div class="trend-score">96.5</div></div>
+                        <div class="trend-item"><div class="trend-date">01-12</div><div class="trend-bar"><div class="trend-fill" style="width:97%"></div></div><div class="trend-score">97</div></div>
+                        <div class="trend-item"><div class="trend-date">12-12</div><div class="trend-bar"><div class="trend-fill" style="width:95.5%"></div></div><div class="trend-score">95.5</div></div>
+                        <div class="trend-item"><div class="trend-date">11-12</div><div class="trend-bar"><div class="trend-fill" style="width:96%"></div></div><div class="trend-score">96</div></div>
+                        <div class="trend-item"><div class="trend-date">10-12</div><div class="trend-bar"><div class="trend-fill" style="width:94.5%"></div></div><div class="trend-score">94.5</div></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h2 class="card-title"><i class="fas fa-exclamation-triangle"></i>告警历史</h2></div>
+                    <div class="alarm-history">
+                        <div class="alarm-record"><i class="fas fa-exclamation-triangle"></i><div class="alarm-record-content"><div class="alarm-record-title">油温过高告警</div><div class="alarm-record-time">2026-03-10 09:15</div></div></div>
+                        <div class="alarm-record warning"><i class="fas fa-exclamation-circle"></i><div class="alarm-record-content"><div class="alarm-record-title">负载率偏高</div><div class="alarm-record-time">2026-03-08 14:30</div></div></div>
+                        <div class="alarm-record"><i class="fas fa-exclamation-triangle"></i><div class="alarm-record-content"><div class="alarm-record-title">瓦斯继电器动作</div><div class="alarm-record-time">2026-02-28 16:45</div></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="footer">© 2026 变电设备健康管理系统 | 国网江西省电力公司</footer>
+    <style>@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}</style>
+    <script>
+        // 创建背景粒子
+        const particlesContainer = document.getElementById('particles');
+        for(let i=0;i<20;i++){const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.animationDelay=Math.random()*15+'s';particlesContainer.appendChild(p);}
+        
+        // 健康趋势图表
+        const trendChart = echarts.init(document.getElementById('trend-chart'));
+        trendChart.setOption({
+            tooltip: { trigger: 'axis', backgroundColor: 'rgba(22,33,62,0.95)', borderColor: '#006633', textStyle: { color: '#fff' } },
+            grid: { top: 20, right: 20, bottom: 30, left: 50 },
+            xAxis: { type: 'category', data: ['10 月', '11 月', '12 月', '1 月', '2 月', '3 月'], axisLine: { lineStyle: { color: '#a0a8c0' } } },
+            yAxis: { type: 'value', min: 90, max: 100, axisLine: { lineStyle: { color: '#a0a8c0' } }, splitLine: { lineStyle: { color: 'rgba(255,255,255,0.08)' } } },
+            series: [{ type: 'line', data: [94.5, 96, 95.5, 97, 96.5, 98], smooth: true, lineStyle: { color: '#00cc66', width: 3 }, areaStyle: { color: { type: 'linear', x: 0, y: 0, x: 0, y: 1, colorStops: [{ offset: 0, color: 'rgba(0,204,102,0.3)' }, { offset: 1, color: 'rgba(0,204,102,0)' }] } }, itemStyle: { color: '#00cc66' } }]
+        });
+        window.addEventListener('resize', () => trendChart.resize());
+        
+        // 模拟实时数据更新
+        setInterval(() => {
+            const monitors = document.querySelectorAll('.monitor-value');
+            const baseValues = [45.2, 46.8, 44.5, 52.3, 856, 862, 851, 68.5];
+            const deltas = [0.2, 0.2, 0.2, 0.3, 5, 5, 5, 0.5];
+            monitors.forEach((m, i) => {
+                const unit = m.querySelector('.monitor-unit').outerHTML;
+                const newVal = (baseValues[i] + (Math.random() - 0.5) * deltas[i]).toFixed(i < 4 ? 1 : 0);
+                m.innerHTML = newVal + unit;
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

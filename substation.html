@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>变电站总览 - 变电设备健康管理系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-primary: #0a0e27; --bg-secondary: #1a1f3a; --bg-card: rgba(22, 33, 62, 0.8);
+            --accent-green: #006633; --accent-green-light: #00cc66; --accent-blue: #00d4ff;
+            --text-primary: #ffffff; --text-secondary: #a0a8c0;
+            --warning: #ff9800; --danger: #ff4444; --success: #00c853;
+        }
+        body { font-family: 'Microsoft YaHei', Arial, sans-serif; background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1430 100%); color: var(--text-primary); min-height: 100vh; }
+        .bg-particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; pointer-events: none; }
+        .particle { position: absolute; width: 4px; height: 4px; background: var(--accent-green-light); border-radius: 50%; opacity: 0.3; animation: float 15s infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 0.5; } 90% { opacity: 0.5; } 100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; } }
+        
+        .header { background: rgba(22, 33, 62, 0.95); backdrop-filter: blur(20px); border-bottom: 2px solid var(--accent-green); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        .logo { display: flex; align-items: center; gap: 1rem; }
+        .logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--accent-green), var(--accent-green-light)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .logo h1 { font-size: 1.5rem; background: linear-gradient(90deg, var(--accent-green-light), var(--accent-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .nav { display: flex; gap: 0.5rem; }
+        .nav a { color: var(--text-secondary); text-decoration: none; padding: 0.6rem 1.2rem; border-radius: 10px; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem; font-size: 0.95rem; border: 1px solid transparent; }
+        .nav a:hover, .nav a.active { color: var(--text-primary); background: rgba(0, 102, 51, 0.2); border-color: var(--accent-green); }
+        .mobile-menu-btn { display: none; background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; }
+        
+        .container { max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
+        
+        .search-bar { display: flex; gap: 1rem; margin-bottom: 1.5rem; padding: 1.2rem; background: var(--bg-card); backdrop-filter: blur(10px); border-radius: 16px; border: 1px solid rgba(0,102,51,0.3); flex-wrap: wrap; }
+        .search-bar input, .search-bar select { padding: 0.75rem 1rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); color: var(--text-primary); font-size: 0.95rem; flex: 1; min-width: 150px; }
+        .search-bar input:focus, .search-bar select:focus { outline: none; border-color: var(--accent-green); }
+        .search-bar button { padding: 0.75rem 2rem; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--accent-green), var(--accent-green-light)); color: white; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem; }
+        .search-bar button:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,102,51,0.4); }
+        
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+        .stat-card { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: 12px; padding: 1rem; text-align: center; border: 1px solid rgba(0,102,51,0.2); }
+        .stat-value { font-size: 1.8rem; font-weight: bold; color: var(--accent-green-light); }
+        .stat-label { color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.3rem; }
+        
+        .stations-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+        .station-card { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: 16px; padding: 1.3rem; border: 1px solid rgba(0,102,51,0.2); transition: all 0.3s ease; cursor: pointer; position: relative; overflow: hidden; }
+        .station-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--accent-green), var(--accent-blue)); }
+        .station-card:hover { transform: translateY(-8px); border-color: var(--accent-green-light); box-shadow: 0 15px 45px rgba(0,102,51,0.4); }
+        .station-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .station-name { font-size: 1.05rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+        .station-name i { color: var(--accent-green-light); }
+        .station-status { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .status-normal { background: rgba(0,200,83,0.2); color: var(--success); }
+        .status-warning { background: rgba(255,152,0,0.2); color: var(--warning); }
+        .status-danger { background: rgba(255,68,68,0.2); color: var(--danger); }
+        .station-info { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; margin-bottom: 1rem; }
+        .info-item { display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); font-size: 0.85rem; }
+        .info-item i { color: var(--accent-blue); width: 18px; }
+        .station-health { margin-top: 1rem; }
+        .health-label { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem; }
+        .health-bar { height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
+        .health-fill { height: 100%; background: linear-gradient(90deg, var(--accent-green), var(--accent-green-light)); border-radius: 4px; transition: width 1s ease; }
+        .station-equipment { display: flex; gap: 1rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.08); }
+        .equip-stat { text-align: center; flex: 1; }
+        .equip-stat-value { font-size: 1.3rem; font-weight: bold; color: var(--accent-blue); }
+        .equip-stat-label { font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.2rem; }
+        
+        .pagination { display: flex; justify-content: center; gap: 0.5rem; margin-top: 2rem; }
+        .pagination button { padding: 0.6rem 1.2rem; border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; background: var(--bg-card); color: var(--text-primary); cursor: pointer; transition: all 0.3s ease; }
+        .pagination button:hover, .pagination button.active { background: var(--accent-green); border-color: var(--accent-green-light); }
+        
+        .footer { text-align: center; padding: 2rem; color: var(--text-secondary); border-top: 1px solid rgba(255,255,255,0.08); margin-top: 2rem; font-size: 0.85rem; }
+        
+        @media (max-width: 1024px) { .stations-grid { grid-template-columns: repeat(2, 1fr); } .stats-row { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) { .header { padding: 1rem; } .logo h1 { font-size: 1.1rem; } .nav { display: none; position: absolute; top: 100%; left: 0; right: 0; background: rgba(22,33,62,0.98); flex-direction: column; padding: 1rem; } .nav.active { display: flex; } .mobile-menu-btn { display: block; } .stations-grid { grid-template-columns: 1fr; } .stats-row { grid-template-columns: 1fr 1fr; } .search-bar { flex-direction: column; } .search-bar input, .search-bar select, .search-bar button { width: 100%; } }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: var(--accent-green); border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <div class="bg-particles" id="particles"></div>
+    <header class="header">
+        <div class="logo"><div class="logo-icon"><i class="fas fa-bolt"></i></div><h1>变电设备健康管理系统</h1></div>
+        <button class="mobile-menu-btn" onclick="document.querySelector('.nav').classList.toggle('active')"><i class="fas fa-bars"></i></button>
+        <nav class="nav">
+            <a href="index.html"><i class="fas fa-chart-line"></i> 省公司总览</a>
+            <a href="substation.html" class="active"><i class="fas fa-building"></i> 变电站总览</a>
+            <a href="equipment.html"><i class="fas fa-cog"></i> 设备详情</a>
+        </nav>
+    </header>
+    <div class="container">
+        <div class="stats-row">
+            <div class="stat-card"><div class="stat-value">528</div><div class="stat-label">变电站总数</div></div>
+            <div class="stat-card"><div class="stat-value" style="color:var(--success)">502</div><div class="stat-label">正常运行</div></div>
+            <div class="stat-card"><div class="stat-value" style="color:var(--warning)">21</div><div class="stat-label">一般告警</div></div>
+            <div class="stat-card"><div class="stat-value" style="color:var(--danger)">5</div><div class="stat-label">严重告警</div></div>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="搜索变电站名称..." id="searchInput">
+            <select id="regionSelect"><option value="">所有地区</option><option value="南昌市">南昌市</option><option value="赣州市">赣州市</option><option value="九江市">九江市</option><option value="上饶市">上饶市</option><option value="宜春市">宜春市</option></select>
+            <select id="voltageSelect"><option value="">所有电压等级</option><option value="500kV">500kV</option><option value="220kV">220kV</option><option value="110kV">110kV</option></select>
+            <select id="statusSelect"><option value="">所有状态</option><option value="normal">正常</option><option value="warning">告警</option><option value="danger">严重</option></select>
+            <button onclick="filterStations()"><i class="fas fa-search"></i> 搜索</button>
+        </div>
+        <div class="stations-grid" id="stationsGrid"></div>
+        <div class="pagination"><button><i class="fas fa-chevron-left"></i></button><button class="active">1</button><button>2</button><button>3</button><button><i class="fas fa-chevron-right"></i></button></div>
+    </div>
+    <footer class="footer">© 2026 变电设备健康管理系统 | 国网江西省电力公司</footer>
+    <script>
+        // 创建背景粒子
+        const particlesContainer = document.getElementById('particles');
+        for(let i=0;i<20;i++){const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.animationDelay=Math.random()*15+'s';particlesContainer.appendChild(p);}
+        
+        const stations = [
+            {name:'南昌 500kV 变电站',location:'南昌市',voltage:'500kV',equipment:156,health:98.5,alarms:2,status:'normal'},
+            {name:'赣州 220kV 章贡变电站',location:'赣州市',voltage:'220kV',equipment:98,health:97.8,alarms:1,status:'normal'},
+            {name:'九江 220kV 浔阳变电站',location:'九江市',voltage:'220kV',equipment:112,health:96.2,alarms:4,status:'warning'},
+            {name:'上饶 110kV 信州变电站',location:'上饶市',voltage:'110kV',equipment:65,health:98.9,alarms:0,status:'normal'},
+            {name:'宜春 220kV 袁州变电站',location:'宜春市',voltage:'220kV',equipment:88,health:95.5,alarms:5,status:'danger'},
+            {name:'吉安 110kV 吉州变电站',location:'吉安市',voltage:'110kV',equipment:72,health:97.3,alarms:2,status:'normal'},
+            {name:'抚州 220kV 临川变电站',location:'抚州市',voltage:'220kV',equipment:95,health:98.1,alarms:1,status:'normal'},
+            {name:'景德镇 110kV 珠山变电站',location:'景德镇市',voltage:'110kV',equipment:58,health:96.8,alarms:3,status:'warning'},
+            {name:'萍乡 220kV 安源变电站',location:'萍乡市',voltage:'220kV',equipment:82,health:97.5,alarms:2,status:'normal'},
+            {name:'新余 110kV 渝水变电站',location:'新余市',voltage:'110kV',equipment:68,health:98.3,alarms:0,status:'normal'},
+            {name:'鹰潭 220kV 月湖变电站',location:'鹰潭市',voltage:'220kV',equipment:78,health:96.5,alarms:3,status:'warning'},
+            {name:'南昌 220kV 红谷变电站',location:'南昌市',voltage:'220kV',equipment:105,health:99.1,alarms:0,status:'normal'},
+            {name:'赣州 110kV 章江变电站',location:'赣州市',voltage:'110kV',equipment:62,health:97.2,alarms:1,status:'normal'},
+            {name:'九江 110kV 濂溪变电站',location:'九江市',voltage:'110kV',equipment:55,health:96.8,alarms:2,status:'normal'},
+            {name:'上饶 220kV 广丰变电站',location:'上饶市',voltage:'220kV',equipment:78,health:97.9,alarms:1,status:'normal'},
+            {name:'宜春 110kV 丰城变电站',location:'宜春市',voltage:'110kV',equipment:52,health:95.8,alarms:4,status:'warning'},
+            {name:'南昌 500kV 进贤变电站',location:'南昌市',voltage:'500kV',equipment:142,health:98.8,alarms:1,status:'normal'},
+            {name:'赣州 500kV 赣县变电站',location:'赣州市',voltage:'500kV',equipment:138,health:98.2,alarms:2,status:'normal'}
+        ];
+        
+        function renderStations(data) {
+            const grid = document.getElementById('stationsGrid');
+            grid.innerHTML = '';
+            data.forEach(s => {
+                const card = document.createElement('div');
+                card.className = 'station-card';
+                card.innerHTML = `
+                    <div class="station-header">
+                        <div class="station-name"><i class="fas fa-bolt"></i>${s.name}</div>
+                        <span class="station-status status-${s.status}">${s.status==='normal'?'正常':s.status==='warning'?'告警':'严重'}</span>
+                    </div>
+                    <div class="station-info">
+                        <div class="info-item"><i class="fas fa-map-marker-alt"></i>${s.location}</div>
+                        <div class="info-item"><i class="fas fa-bolt"></i>${s.voltage}</div>
+                        <div class="info-item"><i class="fas fa-cog"></i>${s.equipment}台</div>
+                        <div class="info-item"><i class="fas fa-exclamation-triangle"></i>${s.alarms}个告警</div>
+                    </div>
+                    <div class="station-health">
+                        <div class="health-label"><span>健康评分</span><span style="color:var(--accent-green-light);font-weight:600">${s.health}</span></div>
+                        <div class="health-bar"><div class="health-fill" style="width:${s.health}%"></div></div>
+                    </div>
+                    <div class="station-equipment">
+                        <div class="equip-stat"><div class="equip-stat-value">${Math.floor(s.equipment*0.3)}</div><div class="equip-stat-label">变压器</div></div>
+                        <div class="equip-stat"><div class="equip-stat-value">${Math.floor(s.equipment*0.4)}</div><div class="equip-stat-label">断路器</div></div>
+                        <div class="equip-stat"><div class="equip-stat-value">${Math.floor(s.equipment*0.3)}</div><div class="equip-stat-label">其他</div></div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+        
+        function filterStations() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const region = document.getElementById('regionSelect').value;
+            const voltage = document.getElementById('voltageSelect').value;
+            const status = document.getElementById('statusSelect').value;
+            const filtered = stations.filter(s => {
+                return (!search || s.name.toLowerCase().includes(search)) &&
+                       (!region || s.location === region) &&
+                       (!voltage || s.voltage === voltage) &&
+                       (!status || s.status === status);
+            });
+            renderStations(filtered);
+        }
+        
+        renderStations(stations);
+    </script>
+</body>
+</html>
