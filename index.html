@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>变电设备健康管理系统 - 省公司总览</title>
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --bg-primary: #0a0e27; --bg-secondary: #1a1f3a; --bg-card: rgba(22, 33, 62, 0.8);
             --accent-green: #006633; --accent-green-light: #00cc66; --accent-blue: #00d4ff;
-            --accent-purple: #7b2cbf; --text-primary: #ffffff; --text-secondary: #a0a8c0;
+            --text-primary: #ffffff; --text-secondary: #a0a8c0;
             --warning: #ff9800; --danger: #ff4444; --success: #00c853;
         }
         body {
@@ -19,82 +19,71 @@
             background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1430 100%);
             color: var(--text-primary); min-height: 100vh; overflow-x: hidden;
         }
-        .bg-particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; pointer-events: none; }
+        .bg-particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
         .particle { position: absolute; width: 4px; height: 4px; background: var(--accent-green-light); border-radius: 50%; opacity: 0.3; animation: float 15s infinite; }
         @keyframes float { 0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 0.5; } 90% { opacity: 0.5; } 100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; } }
         
-        .header { background: rgba(22, 33, 62, 0.95); backdrop-filter: blur(20px); border-bottom: 2px solid var(--accent-green); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 30px rgba(0, 102, 51, 0.3); position: sticky; top: 0; z-index: 1000; }
+        .header { background: rgba(22, 33, 62, 0.95); backdrop-filter: blur(20px); border-bottom: 2px solid var(--accent-green); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
         .logo { display: flex; align-items: center; gap: 1rem; }
         .logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--accent-green), var(--accent-green-light)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; animation: glow 2s ease-in-out infinite; }
         @keyframes glow { 0%, 100% { box-shadow: 0 0 20px rgba(0, 204, 102, 0.5); } 50% { box-shadow: 0 0 40px rgba(0, 204, 102, 0.8); } }
-        .logo h1 { font-size: 1.5rem; background: linear-gradient(90deg, var(--accent-green-light), var(--accent-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .logo h1 { font-size: 1.5rem; background: linear-gradient(90deg, var(--accent-green-light), var(--accent-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .nav { display: flex; gap: 0.5rem; }
-        .nav a { color: var(--text-secondary); text-decoration: none; padding: 0.6rem 1.2rem; border-radius: 10px; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem; font-size: 0.95rem; border: 1px solid transparent; }
-        .nav a:hover, .nav a.active { color: var(--text-primary); background: rgba(0, 102, 51, 0.2); border-color: var(--accent-green); box-shadow: 0 0 20px rgba(0, 102, 51, 0.3); }
+        .nav a { color: var(--text-secondary); text-decoration: none; padding: 0.6rem 1.2rem; border-radius: 10px; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem; border: 1px solid transparent; }
+        .nav a:hover, .nav a.active { color: var(--text-primary); background: rgba(0, 102, 51, 0.2); border-color: var(--accent-green); }
         .mobile-menu-btn { display: none; background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; }
         
         .container { max-width: 1600px; margin: 0 auto; padding: 1.5rem; }
         .metrics-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
-        .metric-card { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: 16px; padding: 1.2rem; border: 1px solid rgba(0, 102, 51, 0.3); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .metric-card { background: var(--bg-card); border-radius: 16px; padding: 1.2rem; border: 1px solid rgba(0, 102, 51, 0.3); transition: all 0.3s ease; }
         .metric-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--accent-green), var(--accent-blue)); }
-        .metric-card:hover { transform: translateY(-8px); box-shadow: 0 15px 45px rgba(0, 102, 51, 0.4); border-color: var(--accent-green-light); }
+        .metric-card:hover { transform: translateY(-8px); border-color: var(--accent-green-light); }
         .metric-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 0.8rem; }
         .metric-icon.green { background: linear-gradient(135deg, var(--accent-green), var(--accent-green-light)); }
         .metric-icon.blue { background: linear-gradient(135deg, #0066cc, var(--accent-blue)); }
-        .metric-icon.orange { background: linear-gradient(135deg, #cc6600, var(--warning)); }
         .metric-icon.red { background: linear-gradient(135deg, #cc0000, var(--danger)); }
         .metric-icon.purple { background: linear-gradient(135deg, var(--accent-purple), #a855f7); }
         .metric-icon.cyan { background: linear-gradient(135deg, #0891b2, #22d3ee); }
-        .metric-value { font-size: 1.8rem; font-weight: bold; background: linear-gradient(90deg, var(--text-primary), var(--accent-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .metric-value { font-size: 1.8rem; font-weight: bold; color: var(--accent-blue); }
         .metric-label { color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.3rem; }
         .metric-trend { display: flex; align-items: center; gap: 0.3rem; margin-top: 0.5rem; font-size: 0.75rem; }
         .trend-up { color: var(--success); } .trend-down { color: var(--danger); }
         
         .main-content { display: grid; grid-template-columns: 1fr 380px; gap: 1.5rem; }
-        .card { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: 16px; padding: 1.5rem; border: 1px solid rgba(0, 102, 51, 0.2); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); }
+        .card { background: var(--bg-card); border-radius: 16px; padding: 1.5rem; border: 1px solid rgba(0, 102, 51, 0.2); }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
         .card-title { font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem; }
         .card-title i { color: var(--accent-green-light); }
         
-        #map-chart { width: 100%; min-height: 400px; border-radius: 12px; }
         .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem; }
-        #pie-chart, #trend-chart { width: 100%; min-height: 300px; }
         
         .alarm-list { display: flex; flex-direction: column; gap: 0.8rem; max-height: 400px; overflow-y: auto; }
-        .alarm-item { background: rgba(255, 68, 68, 0.08); border-left: 4px solid var(--danger); padding: 1rem; border-radius: 10px; display: flex; align-items: flex-start; gap: 0.8rem; animation: slideIn 0.4s ease; transition: all 0.3s ease; }
-        .alarm-item:hover { background: rgba(255, 68, 68, 0.15); transform: translateX(5px); }
+        .alarm-item { background: rgba(255, 68, 68, 0.08); border-left: 4px solid var(--danger); padding: 1rem; border-radius: 10px; display: flex; align-items: flex-start; gap: 0.8rem; }
         .alarm-item.warning { background: rgba(255, 152, 0, 0.08); border-left-color: var(--warning); }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
-        .alarm-icon { font-size: 1.2rem; color: var(--danger); margin-top: 0.2rem; }
+        .alarm-icon { font-size: 1.2rem; color: var(--danger); }
         .alarm-item.warning .alarm-icon { color: var(--warning); }
         .alarm-content { flex: 1; }
         .alarm-title { font-weight: 600; margin-bottom: 0.3rem; font-size: 0.9rem; }
         .alarm-time { color: var(--text-secondary); font-size: 0.75rem; }
-        .alarm-badge { background: var(--danger); color: white; padding: 0.2rem 0.5rem; border-radius: 20px; font-size: 0.7rem; font-weight: bold; }
+        .alarm-badge { background: var(--danger); color: white; padding: 0.2rem 0.5rem; border-radius: 20px; font-size: 0.7rem; }
         
         .ranking-list { display: flex; flex-direction: column; gap: 0.6rem; }
-        .ranking-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.7rem; background: rgba(255, 255, 255, 0.03); border-radius: 10px; transition: all 0.3s ease; }
-        .ranking-item:hover { background: rgba(0, 102, 51, 0.15); transform: translateX(5px); }
-        .ranking-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; flex-shrink: 0; }
+        .ranking-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.7rem; background: rgba(255, 255, 255, 0.03); border-radius: 10px; }
+        .ranking-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; }
         .ranking-num.gold { background: linear-gradient(135deg, #ffd700, #ffaa00); color: #000; }
         .ranking-num.silver { background: linear-gradient(135deg, #c0c0c0, #a0a0a0); color: #000; }
         .ranking-num.bronze { background: linear-gradient(135deg, #cd7f32, #b87333); color: #fff; }
         .ranking-num.normal { background: rgba(255, 255, 255, 0.15); }
-        .ranking-info { flex: 1; min-width: 0; }
-        .ranking-name { font-weight: 600; margin-bottom: 0.3rem; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ranking-info { flex: 1; }
+        .ranking-name { font-weight: 600; margin-bottom: 0.3rem; font-size: 0.9rem; }
         .ranking-bar { height: 6px; background: rgba(255, 255, 255, 0.08); border-radius: 3px; overflow: hidden; }
-        .ranking-fill { height: 100%; background: linear-gradient(90deg, var(--accent-green), var(--accent-green-light)); border-radius: 3px; transition: width 1s ease; }
-        .ranking-score { font-weight: bold; color: var(--accent-green-light); min-width: 45px; text-align: right; font-size: 0.9rem; }
+        .ranking-fill { height: 100%; background: linear-gradient(90deg, var(--accent-green), var(--accent-green-light)); border-radius: 3px; }
+        .ranking-score { font-weight: bold; color: var(--accent-green-light); min-width: 45px; text-align: right; }
         
-        .footer { text-align: center; padding: 2rem; color: var(--text-secondary); border-top: 1px solid rgba(255, 255, 255, 0.08); margin-top: 2rem; font-size: 0.85rem; }
+        .footer { text-align: center; padding: 2rem; color: var(--text-secondary); border-top: 1px solid rgba(255, 255, 255, 0.08); margin-top: 2rem; }
         
         @media (max-width: 1400px) { .metrics-grid { grid-template-columns: repeat(3, 1fr); } .main-content { grid-template-columns: 1fr; } }
-        @media (max-width: 768px) { .header { padding: 1rem; } .logo h1 { font-size: 1.1rem; } .nav { display: none; position: absolute; top: 100%; left: 0; right: 0; background: rgba(22, 33, 62, 0.98); flex-direction: column; padding: 1rem; gap: 0.5rem; } .nav.active { display: flex; } .mobile-menu-btn { display: block; } .metrics-grid { grid-template-columns: repeat(2, 1fr); } .container { padding: 1rem; } .charts-row { grid-template-columns: 1fr; } #map-chart { min-height: 300px; } }
-        
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb { background: var(--accent-green); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent-green-light); }
+        @media (max-width: 768px) { .header { padding: 1rem; } .nav { display: none; } .mobile-menu-btn { display: block; } .metrics-grid { grid-template-columns: repeat(2, 1fr); } .charts-row { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -115,42 +104,12 @@
 
     <div class="container">
         <div class="metrics-grid">
-            <div class="metric-card">
-                <div class="metric-icon green"><i class="fas fa-subway"></i></div>
-                <div class="metric-value">528</div>
-                <div class="metric-label">变电站总数</div>
-                <div class="metric-trend trend-up"><i class="fas fa-arrow-up"></i> +12 本月</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-icon blue"><i class="fas fa-plug"></i></div>
-                <div class="metric-value">15,840</div>
-                <div class="metric-label">设备总数</div>
-                <div class="metric-trend trend-up"><i class="fas fa-arrow-up"></i> +324 本月</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-icon green"><i class="fas fa-heartbeat"></i></div>
-                <div class="metric-value">98.6%</div>
-                <div class="metric-label">设备健康率</div>
-                <div class="metric-trend trend-up"><i class="fas fa-arrow-up"></i> +0.3%</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-icon red"><i class="fas fa-bell"></i></div>
-                <div class="metric-value">23</div>
-                <div class="metric-label">当前告警</div>
-                <div class="metric-trend trend-down"><i class="fas fa-arrow-down"></i> -5 昨日</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-icon purple"><i class="fas fa-clipboard-check"></i></div>
-                <div class="metric-value">156</div>
-                <div class="metric-label">今日巡检</div>
-                <div class="metric-trend trend-up"><i class="fas fa-arrow-up"></i> 完成率 94%</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-icon cyan"><i class="fas fa-tools"></i></div>
-                <div class="metric-value">89</div>
-                <div class="metric-label">处理工单</div>
-                <div class="metric-trend trend-up"><i class="fas fa-arrow-up"></i> +12 昨日</div>
-            </div>
+            <div class="metric-card"><div class="metric-icon green"><i class="fas fa-subway"></i></div><div class="metric-value">528</div><div class="metric-label">变电站总数</div><div class="metric-trend trend-up"><i class="fas fa-arrow-up"></i> +12 本月</div></div>
+            <div class="metric-card"><div class="metric-icon blue"><i class="fas fa-plug"></i></div><div class="metric-value">15,840</div><div class="metric-label">设备总数</div><div class="metric-trend trend-up"><i class="fas fa-arrow-up"></i> +324 本月</div></div>
+            <div class="metric-card"><div class="metric-icon green"><i class="fas fa-heartbeat"></i></div><div class="metric-value">98.6%</div><div class="metric-label">设备健康率</div><div class="metric-trend trend-up"><i class="fas fa-arrow-up"></i> +0.3%</div></div>
+            <div class="metric-card"><div class="metric-icon red"><i class="fas fa-bell"></i></div><div class="metric-value">23</div><div class="metric-label">当前告警</div><div class="metric-trend trend-down"><i class="fas fa-arrow-down"></i> -5 昨日</div></div>
+            <div class="metric-card"><div class="metric-icon purple"><i class="fas fa-clipboard-check"></i></div><div class="metric-value">156</div><div class="metric-label">今日巡检</div><div class="metric-trend trend-up"><i class="fas fa-arrow-up"></i> 完成率 94%</div></div>
+            <div class="metric-card"><div class="metric-icon cyan"><i class="fas fa-tools"></i></div><div class="metric-value">89</div><div class="metric-label">处理工单</div><div class="metric-trend trend-up"><i class="fas fa-arrow-up"></i> +12 昨日</div></div>
         </div>
 
         <div class="main-content">
@@ -158,22 +117,17 @@
                 <div class="card" style="margin-bottom: 1.5rem;">
                     <div class="card-header">
                         <h2 class="card-title"><i class="fas fa-map-marked-alt"></i>变电站分布热力图</h2>
-                        <div style="display:flex;gap:1rem;font-size:0.75rem;color:var(--text-secondary);">
-                            <span><i class="fas fa-circle" style="color:var(--danger);font-size:0.5rem;"></i> 严重</span>
-                            <span><i class="fas fa-circle" style="color:var(--warning);font-size:0.5rem;"></i> 告警</span>
-                            <span><i class="fas fa-circle" style="color:var(--success);font-size:0.5rem;"></i> 正常</span>
-                        </div>
                     </div>
-                    <div id="map-chart"></div>
+                    <div id="mapChart" style="width: 100%; height: 400px;"></div>
                 </div>
                 <div class="charts-row">
                     <div class="card">
                         <div class="card-header"><h2 class="card-title"><i class="fas fa-chart-pie"></i>设备类型分布</h2></div>
-                        <div id="pie-chart"></div>
+                        <div id="pieChart" style="width: 100%; height: 300px;"></div>
                     </div>
                     <div class="card">
                         <div class="card-header"><h2 class="card-title"><i class="fas fa-chart-line"></i>健康趋势</h2></div>
-                        <div id="trend-chart"></div>
+                        <div id="trendChart" style="width: 100%; height: 300px;"></div>
                     </div>
                 </div>
             </div>
@@ -206,64 +160,56 @@
         </div>
     </div>
 
-    <footer class="footer">© 2026 变电设备健康管理系统 | 国网江西省电力公司 | 技术支持：AI 开发助手</footer>
-
+    <footer class="footer">© 2026 变电设备健康管理系统 | 国网江西省电力公司</footer>
     <style>@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}</style>
     
     <script>
-        // 创建背景粒子
+        // 背景粒子
         (function() {
             var container = document.getElementById('particles');
-            for(var i=0; i<30; i++) {
+            for (var i = 0; i < 20; i++) {
                 var p = document.createElement('div');
                 p.className = 'particle';
-                p.style.left = Math.random()*100 + '%';
-                p.style.animationDelay = Math.random()*15 + 's';
-                p.style.animationDuration = (10 + Math.random()*10) + 's';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDelay = Math.random() * 15 + 's';
                 container.appendChild(p);
             }
         })();
         
-        // 地图数据
-        var mapData = [
-            {name:'南昌市',value:99.2,stations:85,alarms:2,coord:[115.89,28.68]},
-            {name:'赣州市',value:98.8,stations:72,alarms:3,coord:[114.94,25.85]},
-            {name:'九江市',value:98.5,stations:68,alarms:5,coord:[116.00,29.70]},
-            {name:'上饶市',value:98.1,stations:65,alarms:4,coord:[117.97,28.45]},
-            {name:'宜春市',value:97.8,stations:58,alarms:3,coord:[114.39,27.80]},
-            {name:'吉安市',value:97.5,stations:52,alarms:2,coord:[114.96,27.11]},
-            {name:'抚州市',value:97.2,stations:48,alarms:1,coord:[116.36,27.95]},
-            {name:'景德镇市',value:96.9,stations:35,alarms:2,coord:[117.21,29.30]},
-            {name:'萍乡市',value:96.5,stations:32,alarms:1,coord:[113.85,27.62]},
-            {name:'新余市',value:96.2,stations:28,alarms:0,coord:[114.92,27.81]},
-            {name:'鹰潭市',value:95.8,stations:25,alarms:0,coord:[117.07,28.27]}
-        ];
-        
-        // 初始化图表 - 确保 DOM 加载完成
-        setTimeout(function() {
+        // 图表初始化 - 确保 DOM 加载完成
+        window.addEventListener('load', function() {
+            console.log('Page loaded, initializing charts...');
             initCharts();
-        }, 100);
+        });
         
         function initCharts() {
-            // 地图图表
-            var mapChart = echarts.init(document.getElementById('map-chart'));
-            var mapOption = {
+            // 地图 - 散点图
+            var mapChart = echarts.init(document.getElementById('mapChart'));
+            var mapData = [
+                {name: '南昌市', value: 99.2, coord: [115.89, 28.68], alarms: 2},
+                {name: '赣州市', value: 98.8, coord: [114.94, 25.85], alarms: 3},
+                {name: '九江市', value: 98.5, coord: [116.00, 29.70], alarms: 5},
+                {name: '上饶市', value: 98.1, coord: [117.97, 28.45], alarms: 4},
+                {name: '宜春市', value: 97.8, coord: [114.39, 27.80], alarms: 3},
+                {name: '吉安市', value: 97.5, coord: [114.96, 27.11], alarms: 2},
+                {name: '抚州市', value: 97.2, coord: [116.36, 27.95], alarms: 1},
+                {name: '景德镇市', value: 96.9, coord: [117.21, 29.30], alarms: 2},
+                {name: '萍乡市', value: 96.5, coord: [113.85, 27.62], alarms: 1},
+                {name: '新余市', value: 96.2, coord: [114.92, 27.81], alarms: 0},
+                {name: '鹰潭市', value: 95.8, coord: [117.07, 28.27], alarms: 0}
+            ];
+            
+            mapChart.setOption({
                 tooltip: {
                     trigger: 'item',
-                    backgroundColor: 'rgba(22,33,62,0.95)',
-                    borderColor: '#006633',
-                    textStyle: { color: '#fff' },
-                    formatter: function(params) {
-                        var d = params.data;
-                        return d.name + '<br/>健康:' + d.value + '%<br/>变电站:' + d.stations + '座<br/>告警:' + d.alarms + '个';
+                    formatter: function(p) {
+                        return p.name + '<br/>健康:' + p.value + '%<br/>告警:' + p.data.alarms + '个';
                     }
                 },
                 geo: {
                     map: 'china',
-                    roam: true,
-                    zoom: 1.5,
                     center: [115.89, 28.68],
-                    label: { show: false },
+                    zoom: 1.5,
                     itemStyle: {
                         areaColor: '#0a0e27',
                         borderColor: '#006633',
@@ -276,71 +222,37 @@
                 series: [{
                     type: 'effectScatter',
                     coordinateSystem: 'geo',
-                    data: mapData.map(function(d) {
-                        return {
-                            name: d.name,
-                            value: d.coord.concat([d.value]),
-                            alarms: d.alarms,
-                            stations: d.stations
-                        };
-                    }),
-                    symbolSize: function(val) { return 12 + (val[2] - 95) * 4; },
+                    data: mapData,
+                    symbolSize: 15,
                     showEffectOn: 'render',
-                    rippleEffect: { brushType: 'stroke', scale: 3 },
+                    rippleEffect: { scale: 3 },
                     itemStyle: {
-                        color: function(params) {
-                            if (params.data.alarms > 3) return '#ff4444';
-                            if (params.data.alarms > 1) return '#ff9800';
-                            return '#00c853';
+                        color: function(p) {
+                            return p.data.alarms > 3 ? '#ff4444' : p.data.alarms > 1 ? '#ff9800' : '#00c853';
                         },
-                        shadowBlur: 15,
+                        shadowBlur: 10,
                         shadowColor: '#006633'
                     },
-                    label: {
-                        show: true,
-                        formatter: '{b}',
-                        position: 'right',
-                        color: '#fff',
-                        fontSize: 10
-                    }
+                    label: { show: true, formatter: '{b}', position: 'right', color: '#fff', fontSize: 10 }
                 }]
-            };
-            mapChart.setOption(mapOption);
+            });
+            console.log('Map chart initialized');
             
             // 饼图
-            var pieChart = echarts.init(document.getElementById('pie-chart'));
-            var pieOption = {
-                tooltip: {
-                    trigger: 'item',
-                    backgroundColor: 'rgba(22,33,62,0.95)',
-                    borderColor: '#006633',
-                    textStyle: { color: '#fff' }
-                },
-                legend: {
-                    orient: 'vertical',
-                    right: '5%',
-                    top: 'center',
-                    textStyle: { color: '#a0a8c0', fontSize: 11 }
-                },
+            var pieChart = echarts.init(document.getElementById('pieChart'));
+            pieChart.setOption({
+                tooltip: { trigger: 'item' },
+                legend: { orient: 'vertical', right: '5%', top: 'center', textStyle: { color: '#a0a8c0' } },
                 series: [{
                     type: 'pie',
-                    radius: ['45%', '75%'],
+                    radius: ['40%', '70%'],
                     center: ['35%', '50%'],
-                    avoidLabelOverlap: false,
                     itemStyle: {
                         borderRadius: 8,
                         borderColor: '#16213e',
                         borderWidth: 2
                     },
                     label: { show: false },
-                    emphasis: {
-                        label: {
-                            show: true,
-                            fontSize: 12,
-                            fontWeight: 'bold',
-                            color: '#fff'
-                        }
-                    },
                     data: [
                         { value: 3520, name: '变压器', itemStyle: { color: '#006633' } },
                         { value: 4280, name: '断路器', itemStyle: { color: '#00d4ff' } },
@@ -349,18 +261,13 @@
                         { value: 2000, name: '避雷器', itemStyle: { color: '#ff9800' } }
                     ]
                 }]
-            };
-            pieChart.setOption(pieOption);
+            });
+            console.log('Pie chart initialized');
             
             // 趋势图
-            var trendChart = echarts.init(document.getElementById('trend-chart'));
-            var trendOption = {
-                tooltip: {
-                    trigger: 'axis',
-                    backgroundColor: 'rgba(22,33,62,0.95)',
-                    borderColor: '#006633',
-                    textStyle: { color: '#fff' }
-                },
+            var trendChart = echarts.init(document.getElementById('trendChart'));
+            trendChart.setOption({
+                tooltip: { trigger: 'axis' },
                 grid: { top: 20, right: 20, bottom: 30, left: 40 },
                 xAxis: {
                     type: 'category',
@@ -372,7 +279,7 @@
                     min: 95,
                     max: 100,
                     axisLine: { lineStyle: { color: '#a0a8c0' } },
-                    splitLine: { lineStyle: { color: 'rgba(255,255,255,0.08)' } }
+                    splitLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } }
                 },
                 series: [{
                     type: 'line',
@@ -380,21 +287,16 @@
                     smooth: true,
                     lineStyle: { color: '#00cc66', width: 3 },
                     areaStyle: {
-                        color: {
-                            type: 'linear',
-                            x: 0, y: 0, x: 0, y: 1,
-                            colorStops: [
-                                { offset: 0, color: 'rgba(0,204,102,0.3)' },
-                                { offset: 1, color: 'rgba(0,204,102,0)' }
-                            ]
+                        color: { type: 'linear', x: 0, y: 0, x: 0, y: 1,
+                            colorStops: [{ offset: 0, color: 'rgba(0,204,102,0.3)' }, { offset: 1, color: 'rgba(0,204,102,0)' }]
                         }
                     },
                     itemStyle: { color: '#00cc66' }
                 }]
-            };
-            trendChart.setOption(trendOption);
+            });
+            console.log('Trend chart initialized');
             
-            // 响应式调整
+            // 响应式
             window.addEventListener('resize', function() {
                 mapChart.resize();
                 pieChart.resize();
@@ -402,27 +304,22 @@
             });
         }
         
-        // 模拟实时告警
+        // 实时告警更新
         setInterval(function() {
             var alarms = [
-                {title:'南昌 500kV 变电站 #2 主变瓦斯继电器动作',type:'danger'},
-                {title:'九江 220kV 变电站 SF6 气体压力异常',type:'warning'},
-                {title:'赣州 110kV 变电站 直流系统接地',type:'danger'}
+                {title: '南昌 500kV 变电站 #2 主变瓦斯继电器动作', type: 'danger'},
+                {title: '九江 220kV 变电站 SF6 气体压力异常', type: 'warning'}
             ];
-            var a = alarms[Math.floor(Math.random()*alarms.length)];
+            var a = alarms[Math.floor(Math.random() * alarms.length)];
             var list = document.querySelector('.alarm-list');
             var item = document.createElement('div');
-            item.className = 'alarm-item' + (a.type==='warning' ? ' warning' : '');
+            item.className = 'alarm-item' + (a.type === 'warning' ? ' warning' : '');
             var now = new Date();
-            var timeStr = now.getHours().toString().padStart(2,'0') + ':' + 
-                          now.getMinutes().toString().padStart(2,'0') + ':' + 
-                          now.getSeconds().toString().padStart(2,'0');
-            item.innerHTML = '<i class="fas fa-exclamation-' + (a.type==='warning'?'circle':'triangle') + ' alarm-icon"></i>' +
+            item.innerHTML = '<i class="fas fa-exclamation-' + (a.type === 'warning' ? 'circle' : 'triangle') + ' alarm-icon"></i>' +
                 '<div class="alarm-content"><div class="alarm-title">' + a.title + '</div>' +
-                '<div class="alarm-time">' + timeStr + '</div></div>' +
-                (a.type==='danger'?'<span class="alarm-badge">紧急</span>':'');
+                '<div class="alarm-time">' + now.toLocaleTimeString() + '</div></div>';
             list.insertBefore(item, list.firstChild);
-            if(list.children.length > 5) list.removeChild(list.lastChild);
+            if (list.children.length > 5) list.removeChild(list.lastChild);
         }, 30000);
     </script>
 </body>
