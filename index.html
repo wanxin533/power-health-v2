@@ -19,12 +19,10 @@
             background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1430 100%);
             color: var(--text-primary); min-height: 100vh; overflow-x: hidden;
         }
-        /* 动画背景粒子 */
         .bg-particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; pointer-events: none; }
         .particle { position: absolute; width: 4px; height: 4px; background: var(--accent-green-light); border-radius: 50%; opacity: 0.3; animation: float 15s infinite; }
         @keyframes float { 0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 0.5; } 90% { opacity: 0.5; } 100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; } }
         
-        /* 头部导航 */
         .header { background: rgba(22, 33, 62, 0.95); backdrop-filter: blur(20px); border-bottom: 2px solid var(--accent-green); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 30px rgba(0, 102, 51, 0.3); position: sticky; top: 0; z-index: 1000; }
         .logo { display: flex; align-items: center; gap: 1rem; }
         .logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--accent-green), var(--accent-green-light)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; animation: glow 2s ease-in-out infinite; }
@@ -35,10 +33,7 @@
         .nav a:hover, .nav a.active { color: var(--text-primary); background: rgba(0, 102, 51, 0.2); border-color: var(--accent-green); box-shadow: 0 0 20px rgba(0, 102, 51, 0.3); }
         .mobile-menu-btn { display: none; background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; }
         
-        /* 主容器 */
         .container { max-width: 1600px; margin: 0 auto; padding: 1.5rem; }
-        
-        /* 指标卡片网格 */
         .metrics-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
         .metric-card { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: 16px; padding: 1.2rem; border: 1px solid rgba(0, 102, 51, 0.3); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); transition: all 0.3s ease; position: relative; overflow: hidden; }
         .metric-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--accent-green), var(--accent-blue)); }
@@ -55,23 +50,16 @@
         .metric-trend { display: flex; align-items: center; gap: 0.3rem; margin-top: 0.5rem; font-size: 0.75rem; }
         .trend-up { color: var(--success); } .trend-down { color: var(--danger); }
         
-        /* 主内容区 */
         .main-content { display: grid; grid-template-columns: 1fr 380px; gap: 1.5rem; }
-        
-        /* 卡片通用样式 */
         .card { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: 16px; padding: 1.5rem; border: 1px solid rgba(0, 102, 51, 0.2); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
         .card-title { font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem; }
         .card-title i { color: var(--accent-green-light); }
         
-        /* 地图容器 */
-        #map-chart { width: 100%; height: 450px; border-radius: 12px; }
-        
-        /* 图表容器 */
+        #map-chart { width: 100%; min-height: 400px; border-radius: 12px; }
         .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem; }
-        #pie-chart, #trend-chart { width: 100%; height: 280px; }
+        #pie-chart, #trend-chart { width: 100%; min-height: 300px; }
         
-        /* 告警列表 */
         .alarm-list { display: flex; flex-direction: column; gap: 0.8rem; max-height: 400px; overflow-y: auto; }
         .alarm-item { background: rgba(255, 68, 68, 0.08); border-left: 4px solid var(--danger); padding: 1rem; border-radius: 10px; display: flex; align-items: flex-start; gap: 0.8rem; animation: slideIn 0.4s ease; transition: all 0.3s ease; }
         .alarm-item:hover { background: rgba(255, 68, 68, 0.15); transform: translateX(5px); }
@@ -84,7 +72,6 @@
         .alarm-time { color: var(--text-secondary); font-size: 0.75rem; }
         .alarm-badge { background: var(--danger); color: white; padding: 0.2rem 0.5rem; border-radius: 20px; font-size: 0.7rem; font-weight: bold; }
         
-        /* 排名列表 */
         .ranking-list { display: flex; flex-direction: column; gap: 0.6rem; }
         .ranking-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.7rem; background: rgba(255, 255, 255, 0.03); border-radius: 10px; transition: all 0.3s ease; }
         .ranking-item:hover { background: rgba(0, 102, 51, 0.15); transform: translateX(5px); }
@@ -99,14 +86,11 @@
         .ranking-fill { height: 100%; background: linear-gradient(90deg, var(--accent-green), var(--accent-green-light)); border-radius: 3px; transition: width 1s ease; }
         .ranking-score { font-weight: bold; color: var(--accent-green-light); min-width: 45px; text-align: right; font-size: 0.9rem; }
         
-        /* 页脚 */
         .footer { text-align: center; padding: 2rem; color: var(--text-secondary); border-top: 1px solid rgba(255, 255, 255, 0.08); margin-top: 2rem; font-size: 0.85rem; }
         
-        /* 响应式设计 */
         @media (max-width: 1400px) { .metrics-grid { grid-template-columns: repeat(3, 1fr); } .main-content { grid-template-columns: 1fr; } }
-        @media (max-width: 768px) { .header { padding: 1rem; } .logo h1 { font-size: 1.1rem; } .nav { display: none; position: absolute; top: 100%; left: 0; right: 0; background: rgba(22, 33, 62, 0.98); flex-direction: column; padding: 1rem; gap: 0.5rem; } .nav.active { display: flex; } .mobile-menu-btn { display: block; } .metrics-grid { grid-template-columns: repeat(2, 1fr); } .container { padding: 1rem; } .charts-row { grid-template-columns: 1fr; } #map-chart { height: 300px; } }
+        @media (max-width: 768px) { .header { padding: 1rem; } .logo h1 { font-size: 1.1rem; } .nav { display: none; position: absolute; top: 100%; left: 0; right: 0; background: rgba(22, 33, 62, 0.98); flex-direction: column; padding: 1rem; gap: 0.5rem; } .nav.active { display: flex; } .mobile-menu-btn { display: block; } .metrics-grid { grid-template-columns: repeat(2, 1fr); } .container { padding: 1rem; } .charts-row { grid-template-columns: 1fr; } #map-chart { min-height: 300px; } }
         
-        /* 滚动条美化 */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 3px; }
         ::-webkit-scrollbar-thumb { background: var(--accent-green); border-radius: 3px; }
@@ -130,7 +114,6 @@
     </header>
 
     <div class="container">
-        <!-- 6 个指标卡片 -->
         <div class="metrics-grid">
             <div class="metric-card">
                 <div class="metric-icon green"><i class="fas fa-subway"></i></div>
@@ -229,11 +212,20 @@
     
     <script>
         // 创建背景粒子
-        const particlesContainer = document.getElementById('particles');
-        for(let i=0;i<30;i++){const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.animationDelay=Math.random()*15+'s';p.style.animationDuration=(10+Math.random()*10)+'s';particlesContainer.appendChild(p);}
+        (function() {
+            var container = document.getElementById('particles');
+            for(var i=0; i<30; i++) {
+                var p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random()*100 + '%';
+                p.style.animationDelay = Math.random()*15 + 's';
+                p.style.animationDuration = (10 + Math.random()*10) + 's';
+                container.appendChild(p);
+            }
+        })();
         
         // 地图数据
-        const mapData = [
+        var mapData = [
             {name:'南昌市',value:99.2,stations:85,alarms:2,coord:[115.89,28.68]},
             {name:'赣州市',value:98.8,stations:72,alarms:3,coord:[114.94,25.85]},
             {name:'九江市',value:98.5,stations:68,alarms:5,coord:[116.00,29.70]},
@@ -247,50 +239,191 @@
             {name:'鹰潭市',value:95.8,stations:25,alarms:0,coord:[117.07,28.27]}
         ];
         
-        const mapChart = echarts.init(document.getElementById('map-chart'));
-        mapChart.setOption({
-            tooltip:{trigger:'item',formatter:'{b}<br/>健康:{c}%<br/>变电站:{d.stations}座<br/>告警:{d.alarms}个',backgroundColor:'rgba(22,33,62,0.95)',borderColor:'#006633',textStyle:{color:'#fff'}},
-            geo:{map:'china',roam:true,zoom:1.5,center:[115.89,28.68],label:{show:false},itemStyle:{areaColor:'#0a0e27',borderColor:'#006633',borderWidth:2},emphasis:{itemStyle:{areaColor:'#1a1f3a'}}},
-            series:[{
-                type:'effectScatter',coordinateSystem:'geo',
-                data:mapData.map(d=>({name:d.name,value:[...d.coord,d.value],alarms:d.alarms,stations:d.stations})),
-                symbolSize:d=>12+(d.value[2]-95)*4,showEffectOn:'render',rippleEffect:{brushType:'stroke',scale:3},
-                itemStyle:{color:d=>d.data.alarms>3?'#ff4444':d.data.alarms>1?'#ff9800':'#00c853',shadowBlur:15,shadowColor:'#006633'},
-                label:{show:true,formatter:'{b}',position:'right',color:'#fff',fontSize:9}
-            }]
-        });
+        // 初始化图表 - 确保 DOM 加载完成
+        setTimeout(function() {
+            initCharts();
+        }, 100);
         
-        const pieChart = echarts.init(document.getElementById('pie-chart'));
-        pieChart.setOption({
-            tooltip:{trigger:'item',backgroundColor:'rgba(22,33,62,0.95)',borderColor:'#006633',textStyle:{color:'#fff'}},
-            legend:{orient:'vertical',right:'5%',top:'center',textStyle:{color:'#a0a8c0',fontSize:10}},
-            series:[{type:'pie',radius:['45%','75%'],center:['35%','50%'],avoidLabelOverlap:false,itemStyle:{borderRadius:8,borderColor:'#16213e',borderWidth:2},label:{show:false},emphasis:{label:{show:true,fontSize:12,fontWeight:'bold',color:'#fff'}},
-                data:[{value:3520,name:'变压器',itemStyle:{color:'#006633'}},{value:4280,name:'断路器',itemStyle:{color:'#00d4ff'}},{value:3150,name:'隔离开关',itemStyle:{color:'#7b2cbf'}},{value:2890,name:'互感器',itemStyle:{color:'#00cc66'}},{value:2000,name:'避雷器',itemStyle:{color:'#ff9800'}}]
-            }]
-        });
-        
-        const trendChart = echarts.init(document.getElementById('trend-chart'));
-        trendChart.setOption({
-            tooltip:{trigger:'axis',backgroundColor:'rgba(22,33,62,0.95)',borderColor:'#006633',textStyle:{color:'#fff'}},
-            grid:{top:30,right:20,bottom:30,left:40},
-            xAxis:{type:'category',data:['9 月','10 月','11 月','12 月','1 月','2 月','3 月'],axisLine:{lineStyle:{color:'#a0a8c0'}}},
-            yAxis:{type:'value',min:95,max:100,axisLine:{lineStyle:{color:'#a0a8c0'}},splitLine:{lineStyle:{color:'rgba(255,255,255,0.08)'}}},
-            series:[{type:'line',data:[97.2,97.5,97.8,98.1,98.3,98.5,98.6],smooth:true,lineStyle:{color:'#00cc66',width:3},areaStyle:{color:{type:'linear',x:0,y:0,x:0,y:1,colorStops:[{offset:0,color:'rgba(0,204,102,0.3)'},{offset:1,color:'rgba(0,204,102,0)'}]}},itemStyle:{color:'#00cc66'}}]
-        });
-        
-        window.addEventListener('resize',()=>{mapChart.resize();pieChart.resize();trendChart.resize();});
+        function initCharts() {
+            // 地图图表
+            var mapChart = echarts.init(document.getElementById('map-chart'));
+            var mapOption = {
+                tooltip: {
+                    trigger: 'item',
+                    backgroundColor: 'rgba(22,33,62,0.95)',
+                    borderColor: '#006633',
+                    textStyle: { color: '#fff' },
+                    formatter: function(params) {
+                        var d = params.data;
+                        return d.name + '<br/>健康:' + d.value + '%<br/>变电站:' + d.stations + '座<br/>告警:' + d.alarms + '个';
+                    }
+                },
+                geo: {
+                    map: 'china',
+                    roam: true,
+                    zoom: 1.5,
+                    center: [115.89, 28.68],
+                    label: { show: false },
+                    itemStyle: {
+                        areaColor: '#0a0e27',
+                        borderColor: '#006633',
+                        borderWidth: 2
+                    },
+                    emphasis: {
+                        itemStyle: { areaColor: '#1a1f3a' }
+                    }
+                },
+                series: [{
+                    type: 'effectScatter',
+                    coordinateSystem: 'geo',
+                    data: mapData.map(function(d) {
+                        return {
+                            name: d.name,
+                            value: d.coord.concat([d.value]),
+                            alarms: d.alarms,
+                            stations: d.stations
+                        };
+                    }),
+                    symbolSize: function(val) { return 12 + (val[2] - 95) * 4; },
+                    showEffectOn: 'render',
+                    rippleEffect: { brushType: 'stroke', scale: 3 },
+                    itemStyle: {
+                        color: function(params) {
+                            if (params.data.alarms > 3) return '#ff4444';
+                            if (params.data.alarms > 1) return '#ff9800';
+                            return '#00c853';
+                        },
+                        shadowBlur: 15,
+                        shadowColor: '#006633'
+                    },
+                    label: {
+                        show: true,
+                        formatter: '{b}',
+                        position: 'right',
+                        color: '#fff',
+                        fontSize: 10
+                    }
+                }]
+            };
+            mapChart.setOption(mapOption);
+            
+            // 饼图
+            var pieChart = echarts.init(document.getElementById('pie-chart'));
+            var pieOption = {
+                tooltip: {
+                    trigger: 'item',
+                    backgroundColor: 'rgba(22,33,62,0.95)',
+                    borderColor: '#006633',
+                    textStyle: { color: '#fff' }
+                },
+                legend: {
+                    orient: 'vertical',
+                    right: '5%',
+                    top: 'center',
+                    textStyle: { color: '#a0a8c0', fontSize: 11 }
+                },
+                series: [{
+                    type: 'pie',
+                    radius: ['45%', '75%'],
+                    center: ['35%', '50%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 8,
+                        borderColor: '#16213e',
+                        borderWidth: 2
+                    },
+                    label: { show: false },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: 12,
+                            fontWeight: 'bold',
+                            color: '#fff'
+                        }
+                    },
+                    data: [
+                        { value: 3520, name: '变压器', itemStyle: { color: '#006633' } },
+                        { value: 4280, name: '断路器', itemStyle: { color: '#00d4ff' } },
+                        { value: 3150, name: '隔离开关', itemStyle: { color: '#7b2cbf' } },
+                        { value: 2890, name: '互感器', itemStyle: { color: '#00cc66' } },
+                        { value: 2000, name: '避雷器', itemStyle: { color: '#ff9800' } }
+                    ]
+                }]
+            };
+            pieChart.setOption(pieOption);
+            
+            // 趋势图
+            var trendChart = echarts.init(document.getElementById('trend-chart'));
+            var trendOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(22,33,62,0.95)',
+                    borderColor: '#006633',
+                    textStyle: { color: '#fff' }
+                },
+                grid: { top: 20, right: 20, bottom: 30, left: 40 },
+                xAxis: {
+                    type: 'category',
+                    data: ['9 月', '10 月', '11 月', '12 月', '1 月', '2 月', '3 月'],
+                    axisLine: { lineStyle: { color: '#a0a8c0' } }
+                },
+                yAxis: {
+                    type: 'value',
+                    min: 95,
+                    max: 100,
+                    axisLine: { lineStyle: { color: '#a0a8c0' } },
+                    splitLine: { lineStyle: { color: 'rgba(255,255,255,0.08)' } }
+                },
+                series: [{
+                    type: 'line',
+                    data: [97.2, 97.5, 97.8, 98.1, 98.3, 98.5, 98.6],
+                    smooth: true,
+                    lineStyle: { color: '#00cc66', width: 3 },
+                    areaStyle: {
+                        color: {
+                            type: 'linear',
+                            x: 0, y: 0, x: 0, y: 1,
+                            colorStops: [
+                                { offset: 0, color: 'rgba(0,204,102,0.3)' },
+                                { offset: 1, color: 'rgba(0,204,102,0)' }
+                            ]
+                        }
+                    },
+                    itemStyle: { color: '#00cc66' }
+                }]
+            };
+            trendChart.setOption(trendOption);
+            
+            // 响应式调整
+            window.addEventListener('resize', function() {
+                mapChart.resize();
+                pieChart.resize();
+                trendChart.resize();
+            });
+        }
         
         // 模拟实时告警
-        setInterval(()=>{
-            const alarms=[{title:'南昌 500kV 变电站 #2 主变瓦斯继电器动作',type:'danger'},{title:'九江 220kV 变电站 SF6 气体压力异常',type:'warning'},{title:'赣州 110kV 变电站 直流系统接地',type:'danger'}];
-            const a=alarms[Math.floor(Math.random()*alarms.length)];
-            const list=document.querySelector('.alarm-list');
-            const item=document.createElement('div');
-            item.className=`alarm-item${a.type==='warning'?' warning':''}`;
-            item.innerHTML=`<i class="fas fa-exclamation-${a.type==='warning'?'circle':'triangle'} alarm-icon"></i><div class="alarm-content"><div class="alarm-title">${a.title}</div><div class="alarm-time">${new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}</div></div>${a.type==='danger'?'<span class="alarm-badge">紧急</span>':''}`;
-            list.insertBefore(item,list.firstChild);
-            if(list.children.length>5)list.removeChild(list.lastChild);
-        },30000);
+        setInterval(function() {
+            var alarms = [
+                {title:'南昌 500kV 变电站 #2 主变瓦斯继电器动作',type:'danger'},
+                {title:'九江 220kV 变电站 SF6 气体压力异常',type:'warning'},
+                {title:'赣州 110kV 变电站 直流系统接地',type:'danger'}
+            ];
+            var a = alarms[Math.floor(Math.random()*alarms.length)];
+            var list = document.querySelector('.alarm-list');
+            var item = document.createElement('div');
+            item.className = 'alarm-item' + (a.type==='warning' ? ' warning' : '');
+            var now = new Date();
+            var timeStr = now.getHours().toString().padStart(2,'0') + ':' + 
+                          now.getMinutes().toString().padStart(2,'0') + ':' + 
+                          now.getSeconds().toString().padStart(2,'0');
+            item.innerHTML = '<i class="fas fa-exclamation-' + (a.type==='warning'?'circle':'triangle') + ' alarm-icon"></i>' +
+                '<div class="alarm-content"><div class="alarm-title">' + a.title + '</div>' +
+                '<div class="alarm-time">' + timeStr + '</div></div>' +
+                (a.type==='danger'?'<span class="alarm-badge">紧急</span>':'');
+            list.insertBefore(item, list.firstChild);
+            if(list.children.length > 5) list.removeChild(list.lastChild);
+        }, 30000);
     </script>
 </body>
 </html>
