@@ -25,19 +25,20 @@
         @keyframes glow { 0%, 100% { box-shadow: 0 0 20px rgba(0, 204, 102, 0.5); } 50% { box-shadow: 0 0 40px rgba(0, 204, 102, 0.8); } }
         .logo h1 { font-size: 1.5rem; background: linear-gradient(90deg, var(--accent-green-light), var(--accent-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .nav { display: flex; gap: 0.5rem; }
-        .nav a { color: var(--text-secondary); text-decoration: none; padding: 0.6rem 1.2rem; border-radius: 10px; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem; border: 1px solid transparent; }
+        .nav a { color: var(--text-secondary); text-decoration: none; padding: 0.6rem 1.2rem; border-radius: 10px; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem; border: 1px solid transparent; cursor: pointer; }
         .nav a:hover, .nav a.active { color: var(--text-primary); background: rgba(0, 102, 51, 0.2); border-color: var(--accent-green); }
         .mobile-menu-btn { display: none; background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; }
         
         .container { max-width: 1600px; margin: 0 auto; padding: 1.5rem; }
         .metrics-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
-        .metric-card { background: var(--bg-card); border-radius: 16px; padding: 1.2rem; border: 1px solid rgba(0, 102, 51, 0.3); transition: all 0.3s ease; }
+        .metric-card { background: var(--bg-card); border-radius: 16px; padding: 1.2rem; border: 1px solid rgba(0, 102, 51, 0.3); transition: all 0.3s ease; position: relative; }
+        .metric-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--accent-green), var(--accent-blue)); }
         .metric-card:hover { transform: translateY(-8px); border-color: var(--accent-green-light); }
         .metric-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 0.8rem; }
         .metric-icon.green { background: linear-gradient(135deg, var(--accent-green), var(--accent-green-light)); }
         .metric-icon.blue { background: linear-gradient(135deg, #0066cc, var(--accent-blue)); }
         .metric-icon.red { background: linear-gradient(135deg, #cc0000, var(--danger)); }
-        .metric-icon.purple { background: linear-gradient(135deg, var(--accent-purple), #a855f7); }
+        .metric-icon.purple { background: linear-gradient(135deg, #7b2cbf, #a855f7); }
         .metric-icon.cyan { background: linear-gradient(135deg, #0891b2, #22d3ee); }
         .metric-value { font-size: 1.8rem; font-weight: bold; color: var(--accent-blue); }
         .metric-label { color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.3rem; }
@@ -63,22 +64,35 @@
         .alarm-badge { background: var(--danger); color: white; padding: 0.2rem 0.5rem; border-radius: 20px; font-size: 0.7rem; }
         
         .ranking-list { display: flex; flex-direction: column; gap: 0.6rem; }
-        .ranking-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.7rem; background: rgba(255, 255, 255, 0.03); border-radius: 10px; }
-        .ranking-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; }
+        .ranking-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.7rem; background: rgba(255, 255, 255, 0.03); border-radius: 10px; transition: all 0.3s ease; }
+        .ranking-item:hover { background: rgba(0, 102, 51, 0.15); transform: translateX(5px); }
+        .ranking-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; flex-shrink: 0; }
         .ranking-num.gold { background: linear-gradient(135deg, #ffd700, #ffaa00); color: #000; }
         .ranking-num.silver { background: linear-gradient(135deg, #c0c0c0, #a0a0a0); color: #000; }
         .ranking-num.bronze { background: linear-gradient(135deg, #cd7f32, #b87333); color: #fff; }
         .ranking-num.normal { background: rgba(255, 255, 255, 0.15); }
-        .ranking-info { flex: 1; }
-        .ranking-name { font-weight: 600; margin-bottom: 0.3rem; font-size: 0.9rem; }
+        .ranking-info { flex: 1; min-width: 0; }
+        .ranking-name { font-weight: 600; margin-bottom: 0.3rem; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .ranking-bar { height: 6px; background: rgba(255, 255, 255, 0.08); border-radius: 3px; overflow: hidden; }
         .ranking-fill { height: 100%; background: linear-gradient(90deg, var(--accent-green), var(--accent-green-light)); border-radius: 3px; }
-        .ranking-score { font-weight: bold; color: var(--accent-green-light); min-width: 45px; text-align: right; }
+        .ranking-score { font-weight: bold; color: var(--accent-green-light); min-width: 45px; text-align: right; font-size: 0.9rem; }
         
         .footer { text-align: center; padding: 2rem; color: var(--text-secondary); border-top: 1px solid rgba(255, 255, 255, 0.08); margin-top: 2rem; }
         
-        @media (max-width: 1400px) { .metrics-grid { grid-template-columns: repeat(3, 1fr); } .main-content { grid-template-columns: 1fr; } }
-        @media (max-width: 768px) { .header { padding: 1rem; } .nav { display: none; } .mobile-menu-btn { display: block; } .metrics-grid { grid-template-columns: repeat(2, 1fr); } .charts-row { grid-template-columns: 1fr; } }
+        /* 地区分布可视化 */
+        .region-grid { display: grid; grid-template-columns: repeat(11, 1fr); gap: 0.5rem; margin-top: 1rem; }
+        .region-item { text-align: center; padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .region-item:hover { background: rgba(0,102,51,0.2); transform: scale(1.05); }
+        .region-dot { width: 12px; height: 12px; border-radius: 50%; margin: 0 auto 0.3rem; display: block; }
+        .region-name { font-size: 0.75rem; color: var(--text-secondary); }
+        .region-value { font-size: 0.85rem; font-weight: 600; color: var(--accent-green-light); }
+        
+        @media (max-width: 1400px) { .metrics-grid { grid-template-columns: repeat(3, 1fr); } .main-content { grid-template-columns: 1fr; } .region-grid { grid-template-columns: repeat(6, 1fr); } }
+        @media (max-width: 768px) { .header { padding: 1rem; } .nav { display: none; position: absolute; top: 100%; left: 0; right: 0; background: rgba(22,33,62,0.98); flex-direction: column; padding: 1rem; gap: 0.5rem; } .nav.active { display: flex; } .mobile-menu-btn { display: block; } .metrics-grid { grid-template-columns: repeat(2, 1fr); } .charts-row { grid-template-columns: 1fr; } .region-grid { grid-template-columns: repeat(4, 1fr); } }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: var(--accent-green); border-radius: 3px; }
     </style>
 </head>
 <body>
@@ -89,8 +103,8 @@
             <div class="logo-icon"><i class="fas fa-bolt"></i></div>
             <h1>变电设备健康管理系统</h1>
         </div>
-        <button class="mobile-menu-btn" onclick="document.querySelector('.nav').classList.toggle('active')"><i class="fas fa-bars"></i></button>
-        <nav class="nav">
+        <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+        <nav class="nav" id="mainNav">
             <a href="index.html" class="active"><i class="fas fa-chart-line"></i> 省公司总览</a>
             <a href="substation.html"><i class="fas fa-building"></i> 变电站总览</a>
             <a href="equipment.html"><i class="fas fa-cog"></i> 设备详情</a>
@@ -111,9 +125,11 @@
             <div class="left-panel">
                 <div class="card" style="margin-bottom: 1.5rem;">
                     <div class="card-header">
-                        <h2 class="card-title"><i class="fas fa-map-marked-alt"></i>变电站分布热力图</h2>
+                        <h2 class="card-title"><i class="fas fa-map-marked-alt"></i>各地区变电站分布</h2>
                     </div>
-                    <div id="mapChart" style="width: 100%; height: 400px;"></div>
+                    <div class="region-grid" id="regionGrid">
+                        <!-- 由 JS 生成 -->
+                    </div>
                 </div>
                 <div class="charts-row">
                     <div class="card">
@@ -169,63 +185,46 @@
             particlesContainer.appendChild(p);
         }
         
-        // 地图图表
-        var mapChart = echarts.init(document.getElementById('mapChart'));
-        var mapData = [
-            {name: '南昌市', value: 99.2, coord: [115.89, 28.68], alarms: 2},
-            {name: '赣州市', value: 98.8, coord: [114.94, 25.85], alarms: 3},
-            {name: '九江市', value: 98.5, coord: [116.00, 29.70], alarms: 5},
-            {name: '上饶市', value: 98.1, coord: [117.97, 28.45], alarms: 4},
-            {name: '宜春市', value: 97.8, coord: [114.39, 27.80], alarms: 3},
-            {name: '吉安市', value: 97.5, coord: [114.96, 27.11], alarms: 2},
-            {name: '抚州市', value: 97.2, coord: [116.36, 27.95], alarms: 1},
-            {name: '景德镇市', value: 96.9, coord: [117.21, 29.30], alarms: 2},
-            {name: '萍乡市', value: 96.5, coord: [113.85, 27.62], alarms: 1},
-            {name: '新余市', value: 96.2, coord: [114.92, 27.81], alarms: 0},
-            {name: '鹰潭市', value: 95.8, coord: [117.07, 28.27], alarms: 0}
+        // 导航菜单
+        var mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        var mainNav = document.getElementById('mainNav');
+        if (mobileMenuBtn && mainNav) {
+            mobileMenuBtn.addEventListener('click', function() {
+                mainNav.classList.toggle('active');
+            });
+        }
+        
+        // 地区数据
+        var regionData = [
+            {name: '南昌市', value: 99.2, stations: 85, alarms: 2, color: '#00c853'},
+            {name: '赣州市', value: 98.8, stations: 72, alarms: 3, color: '#00c853'},
+            {name: '九江市', value: 98.5, stations: 68, alarms: 5, color: '#ff9800'},
+            {name: '上饶市', value: 98.1, stations: 65, alarms: 4, color: '#ff9800'},
+            {name: '宜春市', value: 97.8, stations: 58, alarms: 3, color: '#ff9800'},
+            {name: '吉安市', value: 97.5, stations: 52, alarms: 2, color: '#00c853'},
+            {name: '抚州市', value: 97.2, stations: 48, alarms: 1, color: '#00c853'},
+            {name: '景德镇', value: 96.9, stations: 35, alarms: 2, color: '#00c853'},
+            {name: '萍乡市', value: 96.5, stations: 32, alarms: 1, color: '#00c853'},
+            {name: '新余市', value: 96.2, stations: 28, alarms: 0, color: '#00c853'},
+            {name: '鹰潭市', value: 95.8, stations: 25, alarms: 0, color: '#00c853'}
         ];
         
-        mapChart.setOption({
-            tooltip: {
-                trigger: 'item',
-                formatter: function(p) {
-                    return p.name + '<br/>健康:' + p.value + '%<br/>告警:' + p.data.alarms + '个';
-                }
-            },
-            geo: {
-                map: 'china',
-                center: [115.89, 28.68],
-                zoom: 1.5,
-                itemStyle: {
-                    areaColor: '#0a0e27',
-                    borderColor: '#006633',
-                    borderWidth: 2
-                },
-                emphasis: { itemStyle: { areaColor: '#1a1f3a' } }
-            },
-            series: [{
-                type: 'effectScatter',
-                coordinateSystem: 'geo',
-                data: mapData,
-                symbolSize: 15,
-                showEffectOn: 'render',
-                rippleEffect: { scale: 3 },
-                itemStyle: {
-                    color: function(p) {
-                        return p.data.alarms > 3 ? '#ff4444' : p.data.alarms > 1 ? '#ff9800' : '#00c853';
-                    },
-                    shadowBlur: 10,
-                    shadowColor: '#006633'
-                },
-                label: { show: true, formatter: '{b}', position: 'right', color: '#fff', fontSize: 10 }
-            }]
+        // 生成地区网格
+        var regionGrid = document.getElementById('regionGrid');
+        regionData.forEach(function(r) {
+            var item = document.createElement('div');
+            item.className = 'region-item';
+            item.innerHTML = '<span class="region-dot" style="background:' + r.color + '"></span>' +
+                '<div class="region-name">' + r.name + '</div>' +
+                '<div class="region-value">' + r.stations + '座</div>';
+            regionGrid.appendChild(item);
         });
         
         // 饼图
         var pieChart = echarts.init(document.getElementById('pieChart'));
         pieChart.setOption({
             tooltip: { trigger: 'item' },
-            legend: { orient: 'vertical', right: '5%', top: 'center', textStyle: { color: '#a0a8c0' } },
+            legend: { orient: 'vertical', right: '5%', top: 'center', textStyle: { color: '#a0a8c0', fontSize: 11 } },
             series: [{
                 type: 'pie',
                 radius: ['40%', '70%'],
@@ -279,7 +278,6 @@
         
         // 响应式
         window.addEventListener('resize', function() {
-            mapChart.resize();
             pieChart.resize();
             trendChart.resize();
         });
